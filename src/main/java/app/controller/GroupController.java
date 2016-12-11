@@ -18,12 +18,12 @@ public class GroupController {
     @Autowired
     GroupService groups;
 
-    @RequestMapping(value="/groups", method = GET)
-    public List<Group> listGroups(){
+    @RequestMapping(value = "/groups", method = GET)
+    public List<Group> listGroups() {
         return groups.listGroups();
     }
 
-    @RequestMapping(value="/groups/delete", method = POST)
+    @RequestMapping(value = "/groups/delete", method = POST)
     public String removeUser(@RequestParam("id") Long id) {
         return groups.removeGroup(id);
     }

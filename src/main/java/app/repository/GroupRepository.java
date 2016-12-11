@@ -5,7 +5,7 @@ import org.springframework.data.repository.Repository;
 
 import java.util.List;
 
-public interface GroupRepository extends Repository<Group,Long> {
+public interface GroupRepository extends Repository<Group, Long> {
 
     List<Group> findAll();
 

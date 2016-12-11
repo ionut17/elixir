@@ -1,6 +1,5 @@
 package app.config;
 
-import app.model.UserDto;
 import app.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -8,7 +7,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ApplicationStartup  implements ApplicationListener<ApplicationReadyEvent> {
+public class ApplicationStartup implements ApplicationListener<ApplicationReadyEvent> {
 
 
     @Autowired
@@ -20,7 +19,7 @@ public class ApplicationStartup  implements ApplicationListener<ApplicationReady
      */
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent event) {
-        //users.addUser(new UserDto("admin", "asd123", "Admin", "Default", "admin@mail.com"));
+        //users.addUser(new User("admin", "asd123", "Admin", "Default", "admin@mail.com"));
         return;
     }
 

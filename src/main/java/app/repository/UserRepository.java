@@ -2,14 +2,13 @@ package app.repository;
 
 import app.model.User;
 import org.springframework.data.repository.Repository;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
-public interface UserRepository extends Repository<User,Long> {
+public interface UserRepository extends Repository<User, Long> {
 
-//    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     List<User> findAll();
 
     User findOne(Long id);

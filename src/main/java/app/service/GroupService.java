@@ -1,7 +1,6 @@
 package app.service;
 
 import app.model.Group;
-import app.model.User;
 
 import java.util.List;
 

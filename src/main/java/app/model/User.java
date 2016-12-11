@@ -4,26 +4,26 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name="USERS")
-public class User implements Serializable {
+@Table(name = "USERS")
+public class User implements Item, Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="type", nullable = false)
+    @Column(name = "type", nullable = false)
     private String type;
 
-    @Column(name="password", nullable = false, length=60)
+    @Column(name = "password", nullable = false, length = 60)
     private String password;
 
-    @Column(name="first_name", nullable = false, length=30)
+    @Column(name = "first_name", nullable = false, length = 30)
     private String firstName;
 
-    @Column(name="last_name", nullable = false, length=30)
+    @Column(name = "last_name", nullable = false, length = 30)
     private String lastName;
 
-    @Column(name="email", nullable = false, length=30, unique=true)
+    @Column(name = "email", nullable = false, length = 30, unique = true)
     private String email;
 
     public User(String type, String password, String firstName, String lastName, String email) {
@@ -34,7 +34,8 @@ public class User implements Serializable {
         this.setEmail(email);
     }
 
-    public User(){}
+    public User() {
+    }
 
     public Long getId() {
         return id;

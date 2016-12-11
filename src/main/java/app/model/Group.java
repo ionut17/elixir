@@ -4,17 +4,17 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name="GROUPS")
-public class Group implements Serializable {
+@Table(name = "GROUPS")
+public class Group implements Item, Serializable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name="year_of_study", nullable = false, length=1)
+    @Column(name = "year_of_study", nullable = false, length = 1)
     private int yearOfStudy;
 
     public Group(String name, int yearOfStudy) {
@@ -22,7 +22,8 @@ public class Group implements Serializable {
         this.setYearOfStudy(yearOfStudy);
     }
 
-    protected Group(){}
+    protected Group() {
+    }
 
     public Long getId() {
         return id;
