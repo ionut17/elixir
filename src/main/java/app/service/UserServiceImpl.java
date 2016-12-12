@@ -26,7 +26,6 @@ public class UserServiceImpl implements UserService {
     private Logger logger;
 
     public UserServiceImpl() {
-
     }
 
     @Override
@@ -53,10 +52,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void remove(Long id) {
-        try {
-            users.delete(id);
-        } catch (Exception ex) {
-        }
+        users.delete(id);
     }
 
     @Override

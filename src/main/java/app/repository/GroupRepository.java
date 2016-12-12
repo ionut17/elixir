@@ -11,6 +11,10 @@ public interface GroupRepository extends Repository<Group, Long> {
 
     Group findOne(Long id);
 
+    Group findByName(String name);
+
+    List<Group> findByYearOfStudy(int year);
+
     Group save(Group persisted);
 
     void delete(Long id);

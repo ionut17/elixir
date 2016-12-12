@@ -18,23 +18,42 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<Group> listGroups() {
+    public List<Group> findAll() {
         return groups.findAll();
     }
 
     @Override
-    public Group addGroup(String name, int yearOfStudy) {
-        return groups.save(new Group(name, yearOfStudy));
+    public Group findById(long id) {
+        return groups.findOne(id);
     }
 
     @Override
-    public String removeGroup(Long id) {
-        try {
-            groups.delete(id);
-            return "Group with id " + id + " has been removed!";
-        } catch (Exception ex) {
-            return ex.toString();
+    public List<Group> findByYearOfStudy(int year) {
+        return groups.findByYearOfStudy(year);
+    }
+
+    @Override
+    public Group add(Group entity) {
+        return groups.save(entity);
+    }
+
+    @Override
+    public Group update(Group user) {
+        return null;
+    }
+
+    @Override
+    public void remove(Long id) {
+        groups.delete(id);
+    }
+
+    @Override
+    public boolean entityExist(Group entity) {
+        Group found = groups.findByName(entity.getName());
+        if (found == null){
+            return false;
         }
+        return true;
     }
 
 }

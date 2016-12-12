@@ -3,29 +3,94 @@ package app.controller;
 import app.model.Group;
 import app.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
-
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 public class GroupController {
 
     @Autowired
-    GroupService groups;
+    GroupService groupService;
 
-    @RequestMapping(value = "/groups", method = GET)
-    public List<Group> listGroups() {
-        return groups.listGroups();
+    //-------------------Retrieve All Groups--------------------------------------------------------
+
+    @RequestMapping(value = "/groups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Group>> listAllGroups() {
+        List<Group> groups = groupService.findAll();
+        if (groups.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/groups/delete", method = POST)
-    public String removeUser(@RequestParam("id") Long id) {
-        return groups.removeGroup(id);
+    //-------------------Retrieve Single Group--------------------------------------------------------
+
+    @RequestMapping(value = "/groups/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Group> getGroupById(@PathVariable("id") int id) {
+        Group group = groupService.findById(id);
+        if (group == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(group, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/groups/year/{year}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<Group>> getGroupByYear(@PathVariable("year") int year) {
+        List<Group> groups = groupService.findByYearOfStudy(year);
+        if (groups == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else if (groups.size() == 0){
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(groups, HttpStatus.OK);
+    }
+
+    //-------------------Create a Group--------------------------------------------------------
+
+    @RequestMapping(value = "/groups", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Void> createGroup(@RequestBody Group group, UriComponentsBuilder ucBuilder) {
+        if (groupService.entityExist(group)) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        groupService.add(group);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(ucBuilder.path("/groups/{id}").buildAndExpand(group.getId()).toUri());
+        return new ResponseEntity<>(headers, HttpStatus.CREATED);
+    }
+
+    //-------------------Update a Group--------------------------------------------------------
+
+    @RequestMapping(value = "/groups/{id}", method = RequestMethod.PATCH)
+    public ResponseEntity<Group> updateGroup(@PathVariable("id") long id, @RequestBody Group group) {
+        Group currentGroup = groupService.findById(id);
+
+        if (currentGroup == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        currentGroup.setName(group.getName());
+        currentGroup.setYearOfStudy(group.getYearOfStudy());
+
+        groupService.update(currentGroup);
+        return new ResponseEntity<>(currentGroup, HttpStatus.OK);
+    }
+
+    //-------------------Delete a User--------------------------------------------------------
+
+    @RequestMapping(value = "/groups/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<Group> deleteGroup(@PathVariable("id") long id) {
+        Group group = groupService.findById(id);
+        if (group == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        groupService.remove(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

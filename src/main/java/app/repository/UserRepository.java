@@ -8,7 +8,6 @@ import java.util.List;
 
 public interface UserRepository extends Repository<User, Long> {
 
-    //    @PreAuthorize("hasRole('ROLE_ADMIN')")
     List<User> findAll();
 
     User findOne(Long id);
@@ -19,13 +18,10 @@ public interface UserRepository extends Repository<User, Long> {
 
     User findByEmail(String email);
 
-    //    @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
     List<User> findByType(String type);
 
-    //@PreAuthorize("hasRole('ROLE_ADMIN')")
     User save(User persisted);
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     void delete(Long id);
 
 }
