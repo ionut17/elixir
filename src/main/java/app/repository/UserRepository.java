@@ -13,14 +13,14 @@ public interface UserRepository extends Repository<User, Long> {
 
     User findOne(Long id);
 
-    @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
-    List<User> findByType(String type);
-
     List<User> findByFirstName(String firstName);
 
     List<User> findByLastName(String lastName);
 
     User findByEmail(String email);
+
+    //    @PreAuthorize("hasRole('ROLE_LECTURER') or hasRole('ROLE_ADMIN')")
+    List<User> findByType(String type);
 
     //@PreAuthorize("hasRole('ROLE_ADMIN')")
     User save(User persisted);

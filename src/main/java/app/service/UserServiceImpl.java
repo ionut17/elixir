@@ -17,14 +17,13 @@ import java.util.List;
 @Component("userService")
 public class UserServiceImpl implements UserService {
 
+    private static final String[] SUPPORTED_TYPES = new String[]{"student", "lecturer", "admin"};
     @Autowired
     private UserRepository users;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private Logger logger;
-
-    private static final String[] SUPPORTED_TYPES = new String[]{"student", "lecturer", "admin"};
 
     public UserServiceImpl() {
 
@@ -41,10 +40,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User add(User userDto) {
-        String encodedPassword = passwordEncoder.encode(userDto.getPassword());
+    public User add(User user) {
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
 //        logger.info(encodedPassword);
-        return users.save(new User(userDto.getType(), encodedPassword, userDto.getFirstName(), userDto.getFirstName(), userDto.getEmail()));
+        return users.save(new User(user.getType(), encodedPassword, user.getFirstName(), user.getFirstName(), user.getEmail()));
     }
 
     @Override
@@ -62,12 +61,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean entityExist(User entity) {
-        return false;
+        User found = users.findByEmail(entity.getEmail());
+        if (found == null){
+            return false;
+        }
+        return true;
     }
 
     @Override
     public User findByEmail(String email) {
         return users.findByEmail(email);
+    }
+
+    @Override
+    public List<User> findByType(String type) {
+        return users.findByType(type);
     }
 
 
