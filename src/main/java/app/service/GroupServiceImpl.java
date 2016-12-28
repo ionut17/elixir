@@ -50,7 +50,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public boolean entityExist(Group entity) {
         Group found = groups.findByName(entity.getName());
-        if (found == null){
+        if (found == null) {
             return false;
         }
         return true;

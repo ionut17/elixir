@@ -1,6 +1,6 @@
 package app.config;
 
-import app.service.UserService;
+import app.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

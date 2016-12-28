@@ -1,5 +1,7 @@
 package app.model;
 
+import app.model.common.Item;
+
 import javax.persistence.*;
 import java.io.Serializable;
 

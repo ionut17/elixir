@@ -1,6 +1,9 @@
-package app.service;
+package app.service.user;
 
-import app.model.User;
+import app.model.user.*;
+import app.repository.AdminRepository;
+import app.repository.LecturerRepository;
+import app.repository.StudentRepository;
 import app.repository.UserRepository;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +21,20 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private static final String[] SUPPORTED_TYPES = new String[]{"student", "lecturer", "admin"};
+
+    //Main repository
     @Autowired
     private UserRepository users;
+
+    //Secondary repositories
+    @Autowired
+    private StudentRepository students;
+    @Autowired
+    private LecturerRepository lecturers;
+    @Autowired
+    private AdminRepository admins;
+
+    //Other dependencies
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -31,37 +46,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findAll() {
         return users.findAll();
-    }
-
-    @Override
-    public User findById(long id) {
-        return users.findOne(id);
-    }
-
-    @Override
-    public User add(User user) {
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-//        logger.info(encodedPassword);
-        return users.save(new User(user.getType(), encodedPassword, user.getFirstName(), user.getFirstName(), user.getEmail()));
-    }
-
-    @Override
-    public User update(User user) {
-        return null;
-    }
-
-    @Override
-    public void remove(Long id) {
-        users.delete(id);
-    }
-
-    @Override
-    public boolean entityExist(User entity) {
-        User found = users.findByEmail(entity.getEmail());
-        if (found == null){
-            return false;
-        }
-        return true;
     }
 
     @Override
@@ -89,7 +73,7 @@ public class UserServiceImpl implements UserService {
             }
             return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), getAuthorities(user));
         } catch (Exception e) {
-            throw new UsernameNotFoundException("User not found");
+            throw new UsernameNotFoundException("IUser not found");
         }
     }
 

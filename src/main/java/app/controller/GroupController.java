@@ -45,7 +45,7 @@ public class GroupController {
         List<Group> groups = groupService.findByYearOfStudy(year);
         if (groups == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else if (groups.size() == 0){
+        } else if (groups.size() == 0) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(groups, HttpStatus.OK);

@@ -1,6 +1,6 @@
-package app.service;
+package app.service.common;
 
-import app.model.Item;
+import app.model.common.Item;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
@@ -11,13 +11,10 @@ public interface BaseService<T extends Item> {
 
     T findById(long id);
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     T add(T entity);
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     T update(T user);
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     void remove(Long id);
 
     boolean entityExist(T entity);

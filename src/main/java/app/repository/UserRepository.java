@@ -1,16 +1,11 @@
 package app.repository;
 
-import app.model.User;
+import app.model.user.User;
 import org.springframework.data.repository.Repository;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
-public interface UserRepository extends Repository<User, Long> {
-
-    List<User> findAll();
-
-    User findOne(Long id);
+public interface UserRepository extends BaseRepository<User>, Repository<User, Long> {
 
     List<User> findByFirstName(String firstName);
 
@@ -19,9 +14,5 @@ public interface UserRepository extends Repository<User, Long> {
     User findByEmail(String email);
 
     List<User> findByType(String type);
-
-    User save(User persisted);
-
-    void delete(Long id);
 
 }

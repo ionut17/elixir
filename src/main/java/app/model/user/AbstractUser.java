@@ -1,18 +1,18 @@
-package app.model;
+package app.model.user;
 
 import javax.persistence.*;
-import java.io.Serializable;
 
-@Entity
-@Table(name = "USERS")
-public class User implements Item, Serializable {
+/**
+ * Created by Ionut on 19-Dec-16.
+ */
+@MappedSuperclass
+public abstract class AbstractUser implements IUser {
+
+    //Fields
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "type", nullable = false)
-    private String type;
 
     @Column(name = "password", nullable = false, length = 60)
     private String password;
@@ -26,34 +26,29 @@ public class User implements Item, Serializable {
     @Column(name = "email", nullable = false, length = 30, unique = true)
     private String email;
 
-    public User(String type, String password, String firstName, String lastName, String email) {
-        this.setType(type);
+    //Constructors
+
+    public AbstractUser(String password, String firstName, String lastName, String email) {
         this.setPassword(password);
         this.setFirstName(firstName);
         this.setLastName(lastName);
         this.setEmail(email);
     }
 
-    public User() {
+    public AbstractUser(){
     }
+
+    //Setters and getters
 
     public Long getId() {
         return id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public String getPassword() {
         return password;
     }
 
-    private void setPassword(String password) {
+    protected void setPassword(String password) {
         this.password = password;
     }
 
@@ -78,7 +73,7 @@ public class User implements Item, Serializable {
     }
 
     public void setEmail(String email) {
-        this.email = email;
-    }
+            this.email = email;
+        }
 
 }
