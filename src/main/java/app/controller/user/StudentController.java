@@ -1,5 +1,6 @@
-package app.controller;
+package app.controller.user;
 
+import app.controller.common.BaseController;
 import app.model.user.Student;
 import app.service.user.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 
 @RestController
-public class StudentController {
+public class StudentController extends BaseController {
 
     @Autowired
     StudentService studentService;
