@@ -1,14 +1,15 @@
-package app.service.user;
+package app.repository;
 
 import app.model.Group;
 import app.model.user.Student;
-import app.service.common.BaseService;
 
-public interface StudentService extends BaseService<Student> {
-
-    Student findByEmail(String email);
+/**
+ * Created by Ionut on 31-Dec-16.
+ */
+public interface StudentRepositoryCustom {
 
     Student addGroupToStudent(Group group, Student student);
 
     Student removeGroupOfStudent(Group group, Student student);
+
 }

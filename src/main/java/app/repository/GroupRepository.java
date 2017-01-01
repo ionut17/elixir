@@ -13,7 +13,7 @@ public interface GroupRepository extends Repository<Group, Long> {
 
     Group findByName(String name);
 
-    List<Group> findByYearOfStudy(int year);
+    List<Group> findByYear(int year);
 
     Group save(Group persisted);
 

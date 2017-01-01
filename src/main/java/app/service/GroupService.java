@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface GroupService extends BaseService<Group> {
 
-    List<Group> findByYearOfStudy(int year);
+    List<Group> findByYear(int year);
 
+    Group findByName(String name);
 }

@@ -1,5 +1,6 @@
 package app.service.user;
 
+import app.model.Group;
 import app.model.user.*;
 import app.repository.StudentRepository;
 import org.slf4j.Logger;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component("studentService")
@@ -65,6 +67,16 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public Student findByEmail(String email) {
         return students.findByEmail(email);
+    }
+
+    @Override
+    public Student addGroupToStudent(Group group, Student student) {
+        return students.addGroupToStudent(group, student);
+    }
+
+    @Override
+    public Student removeGroupOfStudent(Group group, Student student) {
+        return students.removeGroupOfStudent(group, student);
     }
 
 }

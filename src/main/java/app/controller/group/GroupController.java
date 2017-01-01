@@ -1,4 +1,4 @@
-package app.controller.user;
+package app.controller.group;
 
 import app.controller.common.BaseController;
 import app.model.Group;
@@ -22,7 +22,7 @@ public class GroupController extends BaseController {
     //-------------------Retrieve All Groups--------------------------------------------------------
 
     @RequestMapping(value = "/groups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Group>> listAllGroups() {
+    public @ResponseBody ResponseEntity<List<Group>> listAllGroups() {
         List<Group> groups = groupService.findAll();
         if (groups.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -33,7 +33,7 @@ public class GroupController extends BaseController {
     //-------------------Retrieve Single Group--------------------------------------------------------
 
     @RequestMapping(value = "/groups/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Group> getGroupById(@PathVariable("id") int id) {
+    public @ResponseBody ResponseEntity<Group> getGroupById(@PathVariable("id") int id) {
         Group group = groupService.findById(id);
         if (group == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -42,8 +42,8 @@ public class GroupController extends BaseController {
     }
 
     @RequestMapping(value = "/groups/year/{year}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Group>> getGroupByYear(@PathVariable("year") int year) {
-        List<Group> groups = groupService.findByYearOfStudy(year);
+    public @ResponseBody ResponseEntity<List<Group>> getGroupByYear(@PathVariable("year") int year) {
+        List<Group> groups = groupService.findByYear(year);
         if (groups == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else if (groups.size() == 0) {
@@ -55,7 +55,7 @@ public class GroupController extends BaseController {
     //-------------------Create a Group--------------------------------------------------------
 
     @RequestMapping(value = "/groups", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Void> createGroup(@RequestBody Group group, UriComponentsBuilder ucBuilder) {
+    public @ResponseBody ResponseEntity<Void> createGroup(@RequestBody Group group, UriComponentsBuilder ucBuilder) {
         if (groupService.entityExist(group)) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -68,7 +68,7 @@ public class GroupController extends BaseController {
     //-------------------Update a Group--------------------------------------------------------
 
     @RequestMapping(value = "/groups/{id}", method = RequestMethod.PATCH)
-    public ResponseEntity<Group> updateGroup(@PathVariable("id") long id, @RequestBody Group group) {
+    public @ResponseBody ResponseEntity<Group> updateGroup(@PathVariable("id") long id, @RequestBody Group group) {
         Group currentGroup = groupService.findById(id);
 
         if (currentGroup == null) {
@@ -76,7 +76,7 @@ public class GroupController extends BaseController {
         }
 
         currentGroup.setName(group.getName());
-        currentGroup.setYearOfStudy(group.getYearOfStudy());
+        currentGroup.setYear(group.getYear());
 
         groupService.update(currentGroup);
         return new ResponseEntity<>(currentGroup, HttpStatus.OK);
@@ -85,7 +85,7 @@ public class GroupController extends BaseController {
     //-------------------Delete a User--------------------------------------------------------
 
     @RequestMapping(value = "/groups/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Group> deleteGroup(@PathVariable("id") long id) {
+    public @ResponseBody ResponseEntity<Group> deleteGroup(@PathVariable("id") long id) {
         Group group = groupService.findById(id);
         if (group == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

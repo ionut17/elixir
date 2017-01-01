@@ -1,12 +1,19 @@
 package app.model;
 
 import app.model.common.Item;
+import app.model.user.Student;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Entity
 @Table(name = "GROUPS")
+@JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class,
+        property = "id")
 public class Group implements Item, Serializable {
 
     @Id
@@ -16,12 +23,16 @@ public class Group implements Item, Serializable {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @Column(name = "year_of_study", nullable = false, length = 1)
-    private int yearOfStudy;
+    @Column(name = "year", nullable = false, length = 1)
+    private int year;
+
+    @ManyToMany(mappedBy = "groups", fetch = FetchType.EAGER, targetEntity = Student.class, cascade=CascadeType.ALL)
+    @JsonSerialize(using = CustomStudentSerializer.class)
+    private List<Student> students;
 
     public Group(String name, int yearOfStudy) {
         this.setName(name);
-        this.setYearOfStudy(yearOfStudy);
+        this.setYear(yearOfStudy);
     }
 
     protected Group() {
@@ -39,12 +50,19 @@ public class Group implements Item, Serializable {
         this.name = name;
     }
 
-    public int getYearOfStudy() {
-        return yearOfStudy;
+    public int getYear() {
+        return year;
     }
 
-    public void setYearOfStudy(int yearOfStudy) {
-        this.yearOfStudy = yearOfStudy;
+    public void setYear(int yearOfStudy) {
+        this.year = yearOfStudy;
     }
 
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
+    }
 }

@@ -15,8 +15,17 @@ create table lecturers (id  bigserial not null, email varchar(30) not null, firs
 alter table lecturers add constraint UK_6dotkoaa2kjsp8vw410m25fb7 unique (email);
 create table admins (id  bigserial not null, email varchar(30) not null, first_name varchar(30) not null, last_name varchar(30) not null, password varchar(60) not null, primary key (id));
 alter table admins add constraint UK_6dotkoaa2kjao8vw410m25fb7 unique (email);
+create table groups (id  bigserial not null, name varchar(255) not null, year int4 not null, primary key (id));
+alter table groups add constraint UK_8mf0is8024pqmwjxgldfe54l7 unique (name);
 
 insert into admins (email, first_name, last_name, password) values ('admin@mail.com', 'admin', 'admin', '$2a$10$EPecQyZ6HY2lC4QZQDALXeToh8765r.YSyylmB3KOFeQsGmhIPq42');
+
+/*Linking Tables*/
+CREATE TABLE groups_students (
+  student_id    int REFERENCES students (id) ON UPDATE CASCADE ON DELETE CASCADE, group_id int REFERENCES groups (id) ON UPDATE CASCADE,
+  CONSTRAINT group_students_pkey PRIMARY KEY (student_id, group_id)
+);
+
 
 /*View*/
 CREATE OR REPLACE VIEW USERS AS SELECT * FROM(

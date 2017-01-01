@@ -1,6 +1,10 @@
 package app.model.user;
 
+import app.model.Group;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Ionut on 19-Dec-16.
@@ -74,6 +78,5 @@ public abstract class AbstractUser implements IUser {
 
     public void setEmail(String email) {
             this.email = email;
-        }
-
+    }
 }

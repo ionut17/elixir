@@ -43,12 +43,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers(HttpMethod.POST).access("hasRole('ADMIN')")
-                .antMatchers(HttpMethod.PUT).access("hasRole('ADMIN')")
-                .antMatchers(HttpMethod.PATCH).access("hasRole('ADMIN')")
-                .antMatchers(HttpMethod.DELETE).access("hasRole('ADMIN')")
-                .anyRequest().fullyAuthenticated();
+        http.authorizeRequests().anyRequest().permitAll();
+//        http.authorizeRequests()
+//                .antMatchers(HttpMethod.POST).access("hasRole('ADMIN')")
+//                .antMatchers(HttpMethod.PUT).access("hasRole('ADMIN')")
+//                .antMatchers(HttpMethod.PATCH).access("hasRole('ADMIN')")
+//                .antMatchers(HttpMethod.DELETE).access("hasRole('ADMIN')")
+//                .anyRequest().fullyAuthenticated();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.httpBasic();
         http.csrf().disable();

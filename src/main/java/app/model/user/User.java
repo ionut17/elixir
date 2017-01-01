@@ -9,6 +9,7 @@ import java.io.Serializable;
 @Primary
 @Entity
 @Table(name = "USERS")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public final class User implements Item, Serializable {
 
     //Fields

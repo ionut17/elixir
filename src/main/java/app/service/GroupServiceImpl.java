@@ -28,8 +28,13 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<Group> findByYearOfStudy(int year) {
-        return groups.findByYearOfStudy(year);
+    public List<Group> findByYear(int year) {
+        return groups.findByYear(year);
+    }
+
+    @Override
+    public Group findByName(String name) {
+        return groups.findByName(name);
     }
 
     @Override
