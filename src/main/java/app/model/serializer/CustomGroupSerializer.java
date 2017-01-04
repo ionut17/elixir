@@ -1,5 +1,6 @@
-package app.model;
+package app.model.serializer;
 
+import app.model.Group;
 import app.model.user.Student;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;

@@ -1,6 +1,7 @@
 package app.model;
 
 import app.model.common.Item;
+import app.model.serializer.CustomStudentSerializer;
 import app.model.user.Student;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

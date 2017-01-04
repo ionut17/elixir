@@ -1,11 +1,8 @@
 package app.model.user;
 
-import app.model.CustomGroupSerializer;
-import app.model.CustomStudentSerializer;
+import app.model.serializer.CustomGroupSerializer;
 import app.model.Group;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 

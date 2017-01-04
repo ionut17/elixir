@@ -1,5 +1,6 @@
-package app.model;
+package app.model.serializer;
 
+import app.model.user.Lecturer;
 import app.model.user.Student;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,29 +14,29 @@ import java.util.List;
 /**
  * Created by Ionut on 31-Dec-16.
  */
-public class CustomStudentSerializer extends StdSerializer<List<Student>> {
+public class CustomLecturerSerializer extends StdSerializer<List<Lecturer>> {
 
-    public CustomStudentSerializer() {
+    public CustomLecturerSerializer() {
         this(null);
     }
 
-    public CustomStudentSerializer(Class<List<Student>> t) {
+    public CustomLecturerSerializer(Class<List<Lecturer>> t) {
         super(t);
     }
 
     @Override
     public void serialize(
-            List<Student> students,
+            List<Lecturer> lecturers,
             JsonGenerator generator,
             SerializerProvider provider)
             throws IOException, JsonProcessingException {
 
-        List<Student> studs = new ArrayList<>();
-        for (Student s : students) {
-            s.setGroups(null);
-            studs.add(s);
+        List<Lecturer> lects = new ArrayList<>();
+        for (Lecturer l : lecturers) {
+            l.setCourses(null);
+            lects.add(l);
         }
 
-        generator.writeObject(studs);
+        generator.writeObject(lects);
     }
 }
