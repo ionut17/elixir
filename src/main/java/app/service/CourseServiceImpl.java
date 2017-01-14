@@ -2,7 +2,6 @@ package app.service;
 
 import app.model.Course;
 import app.repository.CourseRepository;
-import app.repository.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

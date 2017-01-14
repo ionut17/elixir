@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by Ionut on 19-Dec-16.
  */
-public interface BaseRepository<T extends Item>  {
+public interface BaseRepository<T extends Item> {
 
     List<T> findAll();
 

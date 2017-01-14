@@ -1,9 +1,10 @@
 package app.model;
 
 import app.model.common.Item;
-import app.model.serializer.CustomStudentSerializer;
+import app.model.serializer.CustomStudentListSerializer;
 import app.model.user.Student;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import javax.persistence.*;
@@ -27,8 +28,8 @@ public class Group implements Item, Serializable {
     @Column(name = "year", nullable = false, length = 1)
     private int year;
 
-    @ManyToMany(mappedBy = "groups", fetch = FetchType.EAGER, targetEntity = Student.class, cascade=CascadeType.ALL)
-    @JsonSerialize(using = CustomStudentSerializer.class)
+    @ManyToMany(mappedBy = "groups", fetch = FetchType.EAGER, targetEntity = Student.class, cascade = CascadeType.ALL)
+    @JsonSerialize(using = CustomStudentListSerializer.class)
     private List<Student> students;
 
     public Group(String name, int yearOfStudy) {

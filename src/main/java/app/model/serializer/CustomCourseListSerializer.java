@@ -7,30 +7,36 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Ionut on 31-Dec-16.
  */
-public class CustomCourseSerializer extends StdSerializer<Course> {
+public class CustomCourseListSerializer extends StdSerializer<List<Course>> {
 
-    public CustomCourseSerializer() {
+    public CustomCourseListSerializer() {
         this(null);
     }
 
-    public CustomCourseSerializer(Class<Course> t) {
+    public CustomCourseListSerializer(Class<List<Course>> t) {
         super(t);
     }
 
     @Override
     public void serialize(
-            Course course,
+            List<Course> courses,
             JsonGenerator generator,
             SerializerProvider provider)
             throws IOException, JsonProcessingException {
 
-        course.setLecturers(null);
-        course.setStudents(null);
-        course.setActivities(null);
-        generator.writeObject(course);
+        List<Course> cors = new ArrayList<>();
+        for (Course c : courses) {
+            c.setLecturers(null);
+            c.setStudents(null);
+            cors.add(c);
+        }
+
+        generator.writeObject(cors);
     }
 }

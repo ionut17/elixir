@@ -1,6 +1,6 @@
 package app.model.serializer;
 
-import app.model.Course;
+import app.model.activity.Activity;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -11,26 +11,24 @@ import java.io.IOException;
 /**
  * Created by Ionut on 31-Dec-16.
  */
-public class CustomCourseSerializer extends StdSerializer<Course> {
+public class CustomActivitySerializer extends StdSerializer<Activity> {
 
-    public CustomCourseSerializer() {
+    public CustomActivitySerializer() {
         this(null);
     }
 
-    public CustomCourseSerializer(Class<Course> t) {
+    public CustomActivitySerializer(Class<Activity> t) {
         super(t);
     }
 
     @Override
     public void serialize(
-            Course course,
+            Activity activity,
             JsonGenerator generator,
             SerializerProvider provider)
             throws IOException, JsonProcessingException {
+        activity.setCourse(null);
 
-        course.setLecturers(null);
-        course.setStudents(null);
-        course.setActivities(null);
-        generator.writeObject(course);
+        generator.writeObject(activity);
     }
 }

@@ -5,18 +5,10 @@ import org.springframework.data.repository.Repository;
 
 import java.util.List;
 
-public interface GroupRepository extends Repository<Group, Long> {
-
-    List<Group> findAll();
-
-    Group findOne(Long id);
+public interface GroupRepository extends BaseRepository<Group>, Repository<Group, Long> {
 
     Group findByName(String name);
 
     List<Group> findByYear(int year);
-
-    Group save(Group persisted);
-
-    void delete(Long id);
 
 }

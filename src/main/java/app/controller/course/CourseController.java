@@ -3,7 +3,6 @@ package app.controller.course;
 import app.controller.common.BaseController;
 import app.model.Course;
 import app.service.CourseService;
-import app.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,7 +22,9 @@ public class CourseController extends BaseController {
     //-------------------Retrieve All Courses--------------------------------------------------------
 
     @RequestMapping(value = "/courses", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity<List<Course>> listAllCourses() {
+    public
+    @ResponseBody
+    ResponseEntity<List<Course>> listAllCourses() {
         List<Course> courses = courseService.findAll();
         if (courses.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -34,7 +35,9 @@ public class CourseController extends BaseController {
     //-------------------Retrieve Single Course--------------------------------------------------------
 
     @RequestMapping(value = "/courses/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity<Course> getCourseById(@PathVariable("id") int id) {
+    public
+    @ResponseBody
+    ResponseEntity<Course> getCourseById(@PathVariable("id") int id) {
         Course course = courseService.findById(id);
         if (course == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -43,7 +46,9 @@ public class CourseController extends BaseController {
     }
 
     @RequestMapping(value = "/courses/year/{year}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity<List<Course>> getCoursesByYear(@PathVariable("year") int year) {
+    public
+    @ResponseBody
+    ResponseEntity<List<Course>> getCoursesByYear(@PathVariable("year") int year) {
         List<Course> courses = courseService.findByYear(year);
         if (courses == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -56,7 +61,9 @@ public class CourseController extends BaseController {
     //-------------------Create a Course--------------------------------------------------------
 
     @RequestMapping(value = "/courses", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public @ResponseBody ResponseEntity<Void> createCourse(@RequestBody Course course, UriComponentsBuilder ucBuilder) {
+    public
+    @ResponseBody
+    ResponseEntity<Void> createCourse(@RequestBody Course course, UriComponentsBuilder ucBuilder) {
         if (courseService.entityExist(course)) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -69,7 +76,9 @@ public class CourseController extends BaseController {
     //-------------------Update a Course--------------------------------------------------------
 
     @RequestMapping(value = "/courses/{id}", method = RequestMethod.PATCH)
-    public @ResponseBody ResponseEntity<Course> updateCourse(@PathVariable("id") long id, @RequestBody Course course) {
+    public
+    @ResponseBody
+    ResponseEntity<Course> updateCourse(@PathVariable("id") long id, @RequestBody Course course) {
         Course currentCourse = courseService.findById(id);
 
         if (currentCourse == null) {
@@ -86,7 +95,9 @@ public class CourseController extends BaseController {
     //-------------------Delete a Course--------------------------------------------------------
 
     @RequestMapping(value = "/courses/{id}", method = RequestMethod.DELETE)
-    public @ResponseBody ResponseEntity<Course> deleteCourse(@PathVariable("id") long id) {
+    public
+    @ResponseBody
+    ResponseEntity<Course> deleteCourse(@PathVariable("id") long id) {
         Course course = courseService.findById(id);
         if (course == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

@@ -1,6 +1,6 @@
 package app.service.user;
 
-import app.model.user.*;
+import app.model.user.User;
 import app.repository.AdminRepository;
 import app.repository.LecturerRepository;
 import app.repository.StudentRepository;
@@ -52,12 +52,6 @@ public class UserServiceImpl implements UserService {
     public User findByEmail(String email) {
         return users.findByEmail(email);
     }
-
-    @Override
-    public List<User> findByType(String type) {
-        return users.findByType(type);
-    }
-
 
     /**
      * UserDetailsService Implementation

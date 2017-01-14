@@ -1,7 +1,6 @@
 package app.model.serializer;
 
-import app.model.Group;
-import app.model.user.Student;
+import app.model.user.Lecturer;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -14,28 +13,29 @@ import java.util.List;
 /**
  * Created by Ionut on 31-Dec-16.
  */
-public class CustomGroupSerializer extends StdSerializer<List<Group>> {
+public class CustomLecturerListSerializer extends StdSerializer<List<Lecturer>> {
 
-    public CustomGroupSerializer() {
+    public CustomLecturerListSerializer() {
         this(null);
     }
 
-    public CustomGroupSerializer(Class<List<Group>> t) {
+    public CustomLecturerListSerializer(Class<List<Lecturer>> t) {
         super(t);
     }
 
     @Override
     public void serialize(
-            List<Group> groups,
+            List<Lecturer> lecturers,
             JsonGenerator generator,
             SerializerProvider provider)
             throws IOException, JsonProcessingException {
 
-        List<Group> grps = new ArrayList<>();
-        for (Group g : groups) {
-            g.setStudents(null);
-            grps.add(g);
+        List<Lecturer> lects = new ArrayList<>();
+        for (Lecturer l : lecturers) {
+            l.setCourses(null);
+            lects.add(l);
         }
-        generator.writeObject(grps);
+
+        generator.writeObject(lects);
     }
 }

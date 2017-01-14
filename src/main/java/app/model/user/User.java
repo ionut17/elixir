@@ -14,11 +14,8 @@ public final class User implements Item, Serializable {
 
     //Fields
 
-    @Id
-    private String v_id;
-
-    @Column(name = "id", nullable = false)
-    private Long id;
+    @EmbeddedId
+    private UserId compositeId;
 
     @Column(name = "password", nullable = false, length = 60)
     private String password;
@@ -32,9 +29,6 @@ public final class User implements Item, Serializable {
     @Column(name = "email", nullable = false, length = 30, unique = true)
     private String email;
 
-    @Column(name = "type", nullable = false)
-    private String type;
-
     //Constructors
 
     public User(String type, String password, String firstName, String lastName, String email) {
@@ -42,7 +36,6 @@ public final class User implements Item, Serializable {
         this.setFirstName(firstName);
         this.setLastName(lastName);
         this.setEmail(email);
-        this.setType(type);
     }
 
     public User() {
@@ -51,7 +44,15 @@ public final class User implements Item, Serializable {
     //Setters and getters
 
     public Long getId() {
-        return id;
+        return getCompositeId().getId();
+    }
+
+    public String getType() {
+        return getCompositeId().getType();
+    }
+
+    public void setType(String type) {
+        this.getCompositeId().setType(type);
     }
 
     public String getPassword() {
@@ -86,12 +87,7 @@ public final class User implements Item, Serializable {
         this.email = email;
     }
 
-    public String getType() {
-        return type;
+    public UserId getCompositeId() {
+        return compositeId;
     }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
 }

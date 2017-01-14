@@ -1,36 +1,41 @@
 package app.model.serializer;
 
-import app.model.Course;
+import app.model.activity.Activity;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Ionut on 31-Dec-16.
  */
-public class CustomCourseSerializer extends StdSerializer<Course> {
+public class CustomActivityListSerializer extends StdSerializer<List<Activity>> {
 
-    public CustomCourseSerializer() {
+    public CustomActivityListSerializer() {
         this(null);
     }
 
-    public CustomCourseSerializer(Class<Course> t) {
+    public CustomActivityListSerializer(Class<List<Activity>> t) {
         super(t);
     }
 
     @Override
     public void serialize(
-            Course course,
+            List<Activity> activities,
             JsonGenerator generator,
             SerializerProvider provider)
             throws IOException, JsonProcessingException {
 
-        course.setLecturers(null);
-        course.setStudents(null);
-        course.setActivities(null);
-        generator.writeObject(course);
+        List<Activity> actvs = new ArrayList<>();
+        for (Activity a : activities) {
+            a.setCourse(null);
+            actvs.add(a);
+        }
+
+        generator.writeObject(actvs);
     }
 }

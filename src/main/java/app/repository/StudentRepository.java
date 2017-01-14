@@ -1,6 +1,5 @@
 package app.repository;
 
-import app.model.Group;
 import app.model.user.Student;
 import org.springframework.data.repository.Repository;
 

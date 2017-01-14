@@ -91,8 +91,8 @@ public class StudentController extends BaseController {
         if (foundGroup == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        for (Group g : student.getGroups()){
-            if (g.getId().equals(foundGroup.getId())){
+        for (Group g : student.getGroups()) {
+            if (g.getId().equals(foundGroup.getId())) {
                 return new ResponseEntity<>(HttpStatus.CONFLICT);
             }
         }
@@ -145,7 +145,7 @@ public class StudentController extends BaseController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         Group group = groupService.findById(group_id);
-        if (group == null){
+        if (group == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         studentService.removeGroupOfStudent(group, student);

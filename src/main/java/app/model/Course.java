@@ -1,13 +1,16 @@
 package app.model;
 
+import app.model.activity.Activity;
 import app.model.common.Item;
-import app.model.serializer.CustomLecturerSerializer;
-import app.model.serializer.CustomStudentSerializer;
+import app.model.serializer.CustomLecturerListSerializer;
+import app.model.serializer.CustomStudentListSerializer;
 import app.model.user.Lecturer;
 import app.model.user.Student;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -33,9 +36,18 @@ public class Course implements Item, Serializable {
     @Column(name = "semester", nullable = false, length = 1)
     private int semester;
 
-    @ManyToMany(mappedBy = "courses", fetch = FetchType.EAGER, targetEntity = Lecturer.class, cascade=CascadeType.ALL)
-    @JsonSerialize(using = CustomLecturerSerializer.class)
+    @ManyToMany(mappedBy = "courses", fetch = FetchType.EAGER, targetEntity = Lecturer.class, cascade = CascadeType.ALL)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JsonSerialize(using = CustomLecturerListSerializer.class)
     private List<Lecturer> lecturers;
+
+    @ManyToMany(mappedBy = "courses", fetch = FetchType.EAGER, targetEntity = Student.class, cascade = CascadeType.ALL)
+    @Fetch(value = FetchMode.SUBSELECT)
+    @JsonSerialize(using = CustomStudentListSerializer.class)
+    private List<Student> students;
+
+    @OneToMany(mappedBy = "course", fetch = FetchType.EAGER, targetEntity = Activity.class, cascade = CascadeType.ALL)
+    private List<Activity> activities;
 
     public Course(String name, int yearOfStudy) {
         this.setTitle(name);
@@ -79,5 +91,21 @@ public class Course implements Item, Serializable {
 
     public void setLecturers(List<Lecturer> lecturers) {
         this.lecturers = lecturers;
+    }
+
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
+    }
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public void setActivities(List<Activity> activities) {
+        this.activities = activities;
     }
 }

@@ -1,14 +1,13 @@
 package app.service.user;
 
 import app.model.Group;
-import app.model.user.*;
+import app.model.user.Student;
 import app.repository.StudentRepository;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component("studentService")
