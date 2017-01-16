@@ -27,7 +27,9 @@ public class CustomActivitySerializer extends StdSerializer<Activity> {
             JsonGenerator generator,
             SerializerProvider provider)
             throws IOException, JsonProcessingException {
-        activity.setCourse(null);
+
+        activity.getCourse().setStudents(null);
+        activity.getCourse().setLecturers(null);
 
         generator.writeObject(activity);
     }

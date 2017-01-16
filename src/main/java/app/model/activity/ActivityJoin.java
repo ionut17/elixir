@@ -26,8 +26,6 @@ public final class ActivityJoin implements Item, Serializable {
     @EmbeddedId
     private ActivityJoinId id;
 
-
-    //TODO refactorizare user (primary key composite) / rescriere script creare / utilizare id composite in join
     @MapsId("userId")
     @ManyToOne
     @JoinColumns({
@@ -42,12 +40,6 @@ public final class ActivityJoin implements Item, Serializable {
     @JoinColumn(name = "activity_id", referencedColumnName = "id", nullable = false)
     @JsonSerialize(using = CustomActivitySerializer.class)
     private Activity activity;
-
-    @MapsId("courseId")
-    @ManyToOne
-    @JoinColumn(name = "course_id", referencedColumnName = "id", nullable = false)
-    @JsonSerialize(using = CustomCourseSerializer.class)
-    private Course course;
 
     //Constructors
 
@@ -72,14 +64,13 @@ public final class ActivityJoin implements Item, Serializable {
         this.activity = activity;
     }
 
-    public Course getCourse() {
-        return course;
+    public String getRole() {
+        return id.getRole();
     }
 
-    public void setCourse(Course course) {
-        this.course = course;
+    public void setRole(String role) {
+        this.id.setRole(role);
     }
-
 }
 
 @Embeddable
@@ -87,6 +78,26 @@ class ActivityJoinId implements Serializable {
 
     private UserId userId;
     private Long activityId;
-    private Long courseId;
+
+    @Column(name = "role", nullable = false, length = 100)
+    private String role;
+
+    //Constructors
+
+    public ActivityJoinId(){}
+
+    public ActivityJoinId(String role){
+        this.setRole(role);
+    }
+
+    //Getters and setters
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 
 }

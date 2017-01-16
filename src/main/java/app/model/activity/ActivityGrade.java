@@ -12,11 +12,11 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ACTIVITY_ATTENDANCES")
+@Table(name = "ACTIVITY_GRADES")
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id")
-public class ActivityAttendance implements Item, Serializable {
+public class ActivityGrade implements Item, Serializable {
 
     @EmbeddedId
     private ActivityAttendanceId id;
@@ -33,7 +33,10 @@ public class ActivityAttendance implements Item, Serializable {
     @JsonSerialize(using = CustomActivitySerializer.class)
     private Activity activity;
 
-    public ActivityAttendance() {
+    @Column(name = "value", nullable = false, length = 3)
+    private int value;
+
+    public ActivityGrade() {
     }
 
     public ActivityAttendanceId getId() {
@@ -59,10 +62,18 @@ public class ActivityAttendance implements Item, Serializable {
     public void setActivity(Activity activity) {
         this.activity = activity;
     }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
 }
 
 @Embeddable
-class ActivityAttendanceId implements Serializable {
+class ActivityGradeId implements Serializable {
 
     private Long studentId;
     private Long activityId;

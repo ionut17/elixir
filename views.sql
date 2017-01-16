@@ -65,11 +65,11 @@ CREATE OR REPLACE VIEW USERS AS SELECT * FROM(
 ) as users;
 
 CREATE OR REPLACE VIEW ACTIVITIES_JOIN AS SELECT * FROM(
-  SELECT T1.id as user_id, 'student' as user_type, T2.id as activity_id, T4.id as course_id FROM students T1, activities T2, courses T4, activity_attendances T0 WHERE T1.id = T0.student_id AND T0.activity_id = T2.id AND T2.course_id = T4.id
+  SELECT T1.id as user_id, 'student' as user_type, T2.id as activity_id, 'attendance' as role FROM students T1, activities T2, activity_attendances T0 WHERE T1.id = T0.student_id AND T0.activity_id = T2.id
   UNION ALL
-  SELECT T1.id as user_id, 'student' as user_type, T2.id as activity_id, T4.id as course_id FROM students T1, activities T2, courses T4, activity_grades T0 WHERE T1.id = T0.student_id AND T0.activity_id = T2.id AND T2.course_id = T4.id
+  SELECT T1.id as user_id, 'student' as user_type, T2.id as activity_id, 'grade' as role FROM students T1, activities T2, activity_grades T0 WHERE T1.id = T0.student_id AND T0.activity_id = T2.id
   UNION ALL
-  SELECT T1.id as user_id, 'student' as user_type, T2.id as activity_id, T4.id as course_id FROM students T1, activities T2, courses T4, activity_files T0 WHERE T1.id = T0.student_id AND T0.activity_id = T2.id AND T2.course_id = T4.id
+  SELECT T1.id as user_id, 'student' as user_type, T2.id as activity_id, 'file' as role FROM students T1, activities T2, activity_files T0 WHERE T1.id = T0.student_id AND T0.activity_id = T2.id
 ) as activities_join;
 
 /*Inserts*/
@@ -132,6 +132,7 @@ insert into activity_types (name) values ('colocviu');
 
 insert into activities(type_id, date, course_id, name) values (1,TIMESTAMP '2017-01-17 15:36:38',1,'Laborator 1');
 insert into activity_attendances(student_id, activity_id) VALUES (1,1);
+insert into activity_grades(student_id, activity_id, value) VALUES (2,1,8);
 
 
 /*Sample Selects*/
