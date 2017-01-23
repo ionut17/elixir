@@ -5,7 +5,7 @@ import app.service.common.BaseService;
 
 import java.util.List;
 
-public interface CourseService extends BaseService<Course> {
+public interface CourseService extends BaseService<Course, Long> {
 
     Course findByTitle(String title);
 

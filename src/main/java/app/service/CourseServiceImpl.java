@@ -23,7 +23,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Course findById(long id) {
+    public Course findById(Long id) {
         return courses.findOne(id);
     }
 

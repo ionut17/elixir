@@ -5,7 +5,7 @@ import app.service.common.BaseService;
 
 import java.util.List;
 
-public interface GroupService extends BaseService<Group> {
+public interface GroupService extends BaseService<Group, Long> {
 
     List<Group> findByYear(int year);
 

@@ -37,7 +37,7 @@ public class CourseController extends BaseController {
     @RequestMapping(value = "/courses/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public
     @ResponseBody
-    ResponseEntity<Course> getCourseById(@PathVariable("id") int id) {
+    ResponseEntity<Course> getCourseById(@PathVariable("id") long id) {
         Course course = courseService.findById(id);
         if (course == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

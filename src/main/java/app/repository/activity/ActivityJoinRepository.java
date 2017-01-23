@@ -4,6 +4,6 @@ import app.model.activity.ActivityJoin;
 import app.repository.BaseRepository;
 import org.springframework.data.repository.Repository;
 
-public interface ActivityJoinRepository extends BaseRepository<ActivityJoin>, Repository<ActivityJoin, Long> {
+public interface ActivityJoinRepository extends BaseRepository<ActivityJoin, Long>, Repository<ActivityJoin, Long> {
 
 }

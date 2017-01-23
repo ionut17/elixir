@@ -31,7 +31,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Admin findById(long id) {
+    public Admin findById(Long id) {
         return admins.findOne(id);
     }
 

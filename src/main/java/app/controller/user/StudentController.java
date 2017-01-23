@@ -2,7 +2,7 @@ package app.controller.user;
 
 import app.controller.common.BaseController;
 import app.model.Group;
-import app.model.user.Student;
+import app.model.dto.StudentDto;
 import app.service.GroupService;
 import app.service.user.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +26,9 @@ public class StudentController extends BaseController {
     //-------------------Retrieve All Students--------------------------------------------------------
 
     @RequestMapping(value = "/students", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Student>> listAllStudents() {
-        List<Student> students = studentService.findAll();
+    @ResponseBody
+    public ResponseEntity<List<StudentDto>> listAllStudents() {
+        List<StudentDto> students = studentService.findAll();
         if (students.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); //HttpStatus.NOT_FOUND
         }
@@ -37,8 +38,8 @@ public class StudentController extends BaseController {
     //-------------------Retrieve Single Student--------------------------------------------------------
 
     @RequestMapping(value = "/students/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Student> getStudentById(@PathVariable("id") int id) {
-        Student student = studentService.findById(id);
+    public ResponseEntity<StudentDto> getStudentById(@PathVariable("id") long id) {
+        StudentDto student = studentService.findById(id);
         if (student == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -46,8 +47,8 @@ public class StudentController extends BaseController {
     }
 
     @RequestMapping(value = "/students/email/{email:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Student> getStudentByEmail(@PathVariable("email") String email) {
-        Student student = studentService.findByEmail(email);
+    public ResponseEntity<StudentDto> getStudentByEmail(@PathVariable("email") String email) {
+        StudentDto student = studentService.findByEmail(email);
         if (student == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -57,8 +58,8 @@ public class StudentController extends BaseController {
     //-------------------Retrieve Groups of Student--------------------------------------------------------
 
     @RequestMapping(value = "/students/{id}/groups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Group>> getGroupsOfStudent(@PathVariable("id") int id) {
-        Student student = studentService.findById(id);
+    public ResponseEntity<List<Group>> getGroupsOfStudent(@PathVariable("id") long id) {
+        StudentDto student = studentService.findById(id);
         if (student == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -68,7 +69,7 @@ public class StudentController extends BaseController {
     //-------------------Create a Student--------------------------------------------------------
 
     @RequestMapping(value = "/students", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Void> createStudent(@RequestBody Student student, UriComponentsBuilder ucBuilder) {
+    public ResponseEntity<Void> createStudent(@RequestBody StudentDto student, UriComponentsBuilder ucBuilder) {
         if (studentService.entityExist(student)) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -82,8 +83,8 @@ public class StudentController extends BaseController {
     //-------------------Add Group for Student---------------------------------------------
 
     @RequestMapping(value = "/students/{student_id}/groups", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Void> addGroupForStudent(@PathVariable("student_id") int student_id, @RequestBody Group group, UriComponentsBuilder ucBuilder) {
-        Student student = studentService.findById(student_id);
+    public ResponseEntity<Void> addGroupForStudent(@PathVariable("student_id") long student_id, @RequestBody Group group, UriComponentsBuilder ucBuilder) {
+        StudentDto student = studentService.findById(student_id);
         if (student == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -108,8 +109,8 @@ public class StudentController extends BaseController {
     //-------------------Update a Student--------------------------------------------------------
 
     @RequestMapping(value = "/students/{id}", method = RequestMethod.PATCH)
-    public ResponseEntity<Student> updateStudent(@PathVariable("id") long id, @RequestBody Student student) {
-        Student currentStudent = studentService.findById(id);
+    public ResponseEntity<StudentDto> updateStudent(@PathVariable("id") long id, @RequestBody StudentDto student) {
+        StudentDto currentStudent = studentService.findById(id);
 
         if (currentStudent == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -126,8 +127,8 @@ public class StudentController extends BaseController {
     //-------------------Delete a Student--------------------------------------------------------
 
     @RequestMapping(value = "/students/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Student> deleteStudent(@PathVariable("id") long id) {
-        Student student = studentService.findById(id);
+    public ResponseEntity<StudentDto> deleteStudent(@PathVariable("id") long id) {
+        StudentDto student = studentService.findById(id);
         if (student == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -139,8 +140,8 @@ public class StudentController extends BaseController {
     //-------------------Delete Group of a Student--------------------------------------------------------
 
     @RequestMapping(value = "/students/{student_id}/groups/{group_id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Student> deleteStudent(@PathVariable("student_id") long student_id, @PathVariable("group_id") long group_id) {
-        Student student = studentService.findById(student_id);
+    public ResponseEntity<StudentDto> deleteStudent(@PathVariable("student_id") long student_id, @PathVariable("group_id") long group_id) {
+        StudentDto student = studentService.findById(student_id);
         if (student == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

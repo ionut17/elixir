@@ -1,9 +1,12 @@
 package app.service.activity;
 
+import app.model.activity.Activity;
 import app.model.activity.ActivityAttendance;
 import app.model.activity.ActivityGrade;
+import app.model.activity.ActivityGradeId;
 import app.repository.activity.ActivityAttendanceRepository;
 import app.repository.activity.ActivityGradeRepository;
+import app.repository.activity.ActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +17,8 @@ public class ActivityGradeServiceImpl implements ActivityGradeService {
 
     @Autowired
     ActivityGradeRepository activityGrades;
+    @Autowired
+    ActivityRepository activityRepository;
 
     public ActivityGradeServiceImpl() {
 
@@ -25,7 +30,7 @@ public class ActivityGradeServiceImpl implements ActivityGradeService {
     }
 
     @Override
-    public ActivityGrade findById(long id) {
+    public ActivityGrade findById(ActivityGradeId id) {
         return activityGrades.findOne(id);
     }
 
@@ -40,7 +45,7 @@ public class ActivityGradeServiceImpl implements ActivityGradeService {
     }
 
     @Override
-    public void remove(Long id) {
+    public void remove(ActivityGradeId id) {
         activityGrades.delete(id);
     }
 
@@ -49,4 +54,12 @@ public class ActivityGradeServiceImpl implements ActivityGradeService {
         return false;
     }
 
+    @Override
+    public List<ActivityGrade> findByActivityId(long id) {
+        Activity activity = activityRepository.findOne(id);
+        if (activity == null){
+            return null;
+        }
+        return activityGrades.findByIdActivityId(id);
+    }
 }

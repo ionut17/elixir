@@ -1,6 +1,7 @@
 package app.controller.user;
 
 import app.controller.common.BaseController;
+import app.model.dto.UserDto;
 import app.model.user.User;
 import app.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,8 @@ public class UserController extends BaseController {
     //-------------------Retrieve All Users--------------------------------------------------------
 
     @RequestMapping(value = "/users", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<User>> listAllUsers() {
-        List<User> users = userService.findAll();
+    public ResponseEntity<List<UserDto>> listAllUsers() {
+        List<UserDto> users = userService.findAll();
         if (users.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); //HttpStatus.NOT_FOUND
         }
@@ -34,8 +35,8 @@ public class UserController extends BaseController {
     //-------------------Retrieve Single User--------------------------------------------------------
 
     @RequestMapping(value = "/users/email/{email:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> getUserByEmail(@PathVariable("email") String email) {
-        User user = userService.findByEmail(email);
+    public ResponseEntity<UserDto> getUserByEmail(@PathVariable("email") String email) {
+        UserDto user = userService.findByEmail(email);
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

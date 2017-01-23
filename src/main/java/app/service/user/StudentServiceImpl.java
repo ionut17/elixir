@@ -1,13 +1,18 @@
 package app.service.user;
 
 import app.model.Group;
+import app.model.dto.StudentDto;
 import app.model.user.Student;
 import app.repository.StudentRepository;
+import app.service.common.BaseService;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 @Component("studentService")
@@ -21,31 +26,34 @@ public class StudentServiceImpl implements StudentService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
     private Logger logger;
 
     public StudentServiceImpl() {
     }
 
     @Override
-    public List<Student> findAll() {
-        return students.findAll();
+    public List<StudentDto> findAll() {
+        Type listType = new TypeToken<List<StudentDto>>() {}.getType();
+        return modelMapper.map(students.findAll(), listType);
     }
 
     @Override
-    public Student findById(long id) {
-        return students.findOne(id);
+    public StudentDto findById(Long id) {
+        return modelMapper.map(students.findOne(id), StudentDto.class);
     }
 
     @Override
-    public Student add(Student student) {
+    public StudentDto add(StudentDto student) {
         String encodedPassword = passwordEncoder.encode(student.getPassword());
 //        logger.info(encodedPassword);
         Student newStudent = new Student(encodedPassword, student.getFirstName(), student.getLastName(), student.getEmail());
-        return students.save(newStudent);
+        return modelMapper.map(students.save(newStudent), StudentDto.class);
     }
 
     @Override
-    public Student update(Student student) {
+    public StudentDto update(StudentDto student) {
         return null;
     }
 
@@ -55,7 +63,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public boolean entityExist(Student student) {
+    public boolean entityExist(StudentDto student) {
         Student found = students.findByEmail(student.getEmail());
         if (found == null) {
             return false;
@@ -64,18 +72,18 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Student findByEmail(String email) {
-        return students.findByEmail(email);
+    public StudentDto findByEmail(String email) {
+        return modelMapper.map(students.findByEmail(email), StudentDto.class);
     }
 
     @Override
-    public Student addGroupToStudent(Group group, Student student) {
-        return students.addGroupToStudent(group, student);
+    public StudentDto addGroupToStudent(Group group, StudentDto student) {
+        return modelMapper.map(students.addGroupToStudent(group, modelMapper.map(student, Student.class)), StudentDto.class);
     }
 
     @Override
-    public Student removeGroupOfStudent(Group group, Student student) {
-        return students.removeGroupOfStudent(group, student);
+    public StudentDto removeGroupOfStudent(Group group, StudentDto student) {
+        return modelMapper.map(students.removeGroupOfStudent(group, modelMapper.map(student, Student.class)), StudentDto.class);
     }
 
 }

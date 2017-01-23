@@ -7,14 +7,14 @@ import java.util.List;
 /**
  * Created by Ionut on 19-Dec-16.
  */
-public interface BaseRepository<T extends Item> {
+public interface BaseRepository<T extends Item, K> {
 
     List<T> findAll();
 
-    T findOne(Long id);
+    T findOne(K id);
 
     T save(T persisted);
 
-    void delete(Long id);
+    void delete(K id);
 
 }

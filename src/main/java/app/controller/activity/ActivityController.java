@@ -1,10 +1,7 @@
 package app.controller.activity;
 
 import app.controller.common.BaseController;
-import app.model.activity.Activity;
-import app.model.activity.ActivityAttendance;
-import app.model.activity.ActivityGrade;
-import app.model.activity.ActivityJoin;
+import app.model.activity.*;
 import app.service.activity.ActivityAttendanceService;
 import app.service.activity.ActivityGradeService;
 import app.service.activity.ActivityService;
@@ -12,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,7 +21,7 @@ public class ActivityController extends BaseController {
     @Autowired
     ActivityAttendanceService activityAttendanceService;
     @Autowired
-    ActivityGradeService activityGradesService;
+    ActivityGradeService activityGradeService;
 
     //-------------------Retrieve All Activities--------------------------------------------------------
 
@@ -68,17 +62,51 @@ public class ActivityController extends BaseController {
         return new ResponseEntity<>(activities, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/attendances/{activity_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ActivityAttendance>> getAttendancesOfActivity(@PathVariable("activity_id") long activityId) {
+        List<ActivityAttendance> attendances = activityAttendanceService.findByActivityId(activityId);
+        if (attendances == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(attendances, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/attendances/{activity_id}/{student_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ActivityAttendance> getAttendanceByCompositeId(@PathVariable("activity_id") long activityId, @PathVariable("student_id") long studentId) {
+        ActivityAttendance attendance = activityAttendanceService.findById(new ActivityAttendanceId(activityId, studentId));
+        if (attendance == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(attendance, HttpStatus.OK);
+    }
+
     //-------------------Retrieve All Grades--------------------------------------------------------
 
     @RequestMapping(value = "/grades", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public
-    @ResponseBody
-    ResponseEntity<List<ActivityGrade>> listAllGrades() {
-        List<ActivityGrade> grades = activityGradesService.findAll();
+    public @ResponseBody ResponseEntity<List<ActivityGrade>> listAllGrades() {
+        List<ActivityGrade> grades = activityGradeService.findAll();
         if (grades.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<>(grades, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/grades/{activity_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ActivityGrade>> getGradesOfActivity(@PathVariable("activity_id") long activityId) {
+        List<ActivityGrade> grades = activityGradeService.findByActivityId(activityId);
+        if (grades == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(grades, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/grades/{activity_id}/{student_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ActivityGrade> getGradesByCompositeId(@PathVariable("activity_id") long activityId, @PathVariable("student_id") long studentId) {
+        ActivityGrade attendance = activityGradeService.findById(new ActivityGradeId(activityId, studentId));
+        if (attendance == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(attendance, HttpStatus.OK);
     }
 
 }

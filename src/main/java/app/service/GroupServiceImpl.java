@@ -23,7 +23,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Group findById(long id) {
+    public Group findById(Long id) {
         return groups.findOne(id);
     }
 

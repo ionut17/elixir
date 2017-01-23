@@ -4,17 +4,17 @@ import app.model.common.Item;
 
 import java.util.List;
 
-public interface BaseService<T extends Item> {
+public interface BaseService<T extends Item, K> {
 
     List<T> findAll();
 
-    T findById(long id);
+    T findById(K id);
 
     T add(T entity);
 
     T update(T user);
 
-    void remove(Long id);
+    void remove(K id);
 
     boolean entityExist(T entity);
 

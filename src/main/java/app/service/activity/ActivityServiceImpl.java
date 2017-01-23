@@ -31,7 +31,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Activity findById(long id) {
+    public Activity findById(Long id) {
         return activities.findOne(id);
     }
 

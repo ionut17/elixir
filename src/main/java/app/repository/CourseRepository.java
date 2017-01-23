@@ -5,7 +5,7 @@ import org.springframework.data.repository.Repository;
 
 import java.util.List;
 
-public interface CourseRepository extends BaseRepository<Course>, Repository<Course, Long> {
+public interface CourseRepository extends BaseRepository<Course, Long>, Repository<Course, Long> {
 
     Course findByTitle(String title);
 

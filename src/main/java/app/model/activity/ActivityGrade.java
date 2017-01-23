@@ -19,7 +19,7 @@ import java.io.Serializable;
 public class ActivityGrade implements Item, Serializable {
 
     @EmbeddedId
-    private ActivityAttendanceId id;
+    private ActivityGradeId id;
 
     @MapsId("studentId")
     @ManyToOne
@@ -39,11 +39,11 @@ public class ActivityGrade implements Item, Serializable {
     public ActivityGrade() {
     }
 
-    public ActivityAttendanceId getId() {
+    public ActivityGradeId getId() {
         return id;
     }
 
-    public void setId(ActivityAttendanceId id) {
+    public void setId(ActivityGradeId id) {
         this.id = id;
     }
 
@@ -72,10 +72,3 @@ public class ActivityGrade implements Item, Serializable {
     }
 }
 
-@Embeddable
-class ActivityGradeId implements Serializable {
-
-    private Long studentId;
-    private Long activityId;
-
-}

@@ -37,7 +37,7 @@ public class GroupController extends BaseController {
     @RequestMapping(value = "/groups/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public
     @ResponseBody
-    ResponseEntity<Group> getGroupById(@PathVariable("id") int id) {
+    ResponseEntity<Group> getGroupById(@PathVariable("id") long id) {
         Group group = groupService.findById(id);
         if (group == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

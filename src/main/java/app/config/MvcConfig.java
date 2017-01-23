@@ -1,5 +1,6 @@
 package app.config;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,11 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     @Bean
     public Logger getLogger() {
         return LoggerFactory.getLogger(this.getClass());
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 
     @Override

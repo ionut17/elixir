@@ -1,8 +1,13 @@
 package app.service.activity;
 
+import app.model.activity.Activity;
 import app.model.activity.ActivityAttendance;
+import app.model.activity.ActivityAttendanceId;
+import app.model.user.User;
 import app.repository.activity.ActivityAttendanceRepository;
+import app.repository.activity.ActivityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,6 +17,8 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
 
     @Autowired
     ActivityAttendanceRepository activityAttendances;
+    @Autowired
+    ActivityRepository activityRepository;
 
     public ActivityAttendanceServiceImpl() {
 
@@ -23,7 +30,7 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
     }
 
     @Override
-    public ActivityAttendance findById(long id) {
+    public ActivityAttendance findById(ActivityAttendanceId id) {
         return activityAttendances.findOne(id);
     }
 
@@ -38,7 +45,7 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
     }
 
     @Override
-    public void remove(Long id) {
+    public void remove(ActivityAttendanceId id) {
         activityAttendances.delete(id);
     }
 
@@ -47,4 +54,12 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
         return false;
     }
 
+    @Override
+    public List<ActivityAttendance> findByActivityId(Long id) {
+        Activity activity = activityRepository.findOne(id);
+        if (activity == null){
+            return null;
+        }
+        return activityAttendances.findByIdActivityId(id);
+    }
 }

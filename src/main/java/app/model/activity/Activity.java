@@ -2,9 +2,14 @@ package app.model.activity;
 
 import app.model.Course;
 import app.model.common.Item;
+import app.model.serializer.CustomActivitySerializer;
+import app.model.serializer.CustomCourseSerializer;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -37,6 +42,7 @@ public class Activity implements Item, Serializable {
 
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
+    @JsonSerialize(using = CustomCourseSerializer.class)
     private Course course;
 
 //    @OneToMany(mappedBy = "activity", fetch = FetchType.EAGER, targetEntity = ActivityAttendance.class, cascade = CascadeType.ALL)

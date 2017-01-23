@@ -34,6 +34,7 @@ public class CustomCourseListSerializer extends StdSerializer<List<Course>> {
         for (Course c : courses) {
             c.setLecturers(null);
             c.setStudents(null);
+            c.setActivities(null);
             cors.add(c);
         }
 

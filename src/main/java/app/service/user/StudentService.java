@@ -1,14 +1,14 @@
 package app.service.user;
 
 import app.model.Group;
-import app.model.user.Student;
+import app.model.dto.StudentDto;
 import app.service.common.BaseService;
 
-public interface StudentService extends BaseService<Student> {
+public interface StudentService extends BaseService<StudentDto, Long> {
 
-    Student findByEmail(String email);
+    StudentDto findByEmail(String email);
 
-    Student addGroupToStudent(Group group, Student student);
+    StudentDto addGroupToStudent(Group group, StudentDto student);
 
-    Student removeGroupOfStudent(Group group, Student student);
+    StudentDto removeGroupOfStudent(Group group, StudentDto student);
 }

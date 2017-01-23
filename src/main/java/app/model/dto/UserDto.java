@@ -1,57 +1,57 @@
-package app.model.user;
+package app.model.dto;
 
+import app.model.Course;
+import app.model.Group;
+import app.model.activity.ActivityAttendance;
+import app.model.activity.ActivityGrade;
+import app.model.common.Item;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.*;
+import java.util.List;
 
-/**
- * Created by Ionut on 19-Dec-16.
- */
-@MappedSuperclass
-public abstract class AbstractUser implements IUser {
+public class UserDto implements Item {
 
-    //Fields
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String type;
+
     @JsonIgnore
-    @Column(name = "password", nullable = false, length = 60)
     private String password;
 
-    @Column(name = "first_name", nullable = false, length = 30)
     private String firstName;
 
-    @Column(name = "last_name", nullable = false, length = 30)
     private String lastName;
 
-    @Column(name = "email", nullable = false, length = 30, unique = true)
     private String email;
 
     //Constructors
 
-    public AbstractUser(String password, String firstName, String lastName, String email) {
-        this.setPassword(password);
-        this.setFirstName(firstName);
-        this.setLastName(lastName);
-        this.setEmail(email);
-    }
-
-    public AbstractUser() {
+    public UserDto() {
     }
 
     //Setters and getters
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getPassword() {
         return password;
     }
 
-    protected void setPassword(String password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 

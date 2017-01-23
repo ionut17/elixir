@@ -33,7 +33,7 @@ public class AdminController extends BaseController {
     //-------------------Retrieve Single Admin--------------------------------------------------------
 
     @RequestMapping(value = "/admins/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Admin> getAdminById(@PathVariable("id") int id) {
+    public ResponseEntity<Admin> getAdminById(@PathVariable("id") long id) {
         Admin admin = adminService.findById(id);
         if (admin == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

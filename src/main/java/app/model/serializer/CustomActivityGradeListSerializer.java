@@ -1,6 +1,7 @@
 package app.model.serializer;
 
-import app.model.user.Student;
+import app.model.activity.Activity;
+import app.model.activity.ActivityGrade;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -13,32 +14,32 @@ import java.util.List;
 /**
  * Created by Ionut on 31-Dec-16.
  */
-public class CustomStudentListSerializer extends StdSerializer<List<Student>> {
+public class CustomActivityGradeListSerializer extends StdSerializer<List<ActivityGrade>> {
 
-    public CustomStudentListSerializer() {
+    public CustomActivityGradeListSerializer() {
         this(null);
     }
 
-    public CustomStudentListSerializer(Class<List<Student>> t) {
+    public CustomActivityGradeListSerializer(Class<List<ActivityGrade>> t) {
         super(t);
     }
 
     @Override
     public void serialize(
-            List<Student> students,
+            List<ActivityGrade> grades,
             JsonGenerator generator,
             SerializerProvider provider)
             throws IOException, JsonProcessingException {
 
-        List<Student> studs = new ArrayList<>();
-        for (Student s : students) {
-            s.setGroups(null);
-            s.setCourses(null);
-            s.setAttendances(null);
-            s.setGrades(null);
-            studs.add(s);
+
+        for (ActivityGrade g : grades) {
+            g.getStudent().setGrades(null);
+            g.getStudent().setAttendances(null);
+            g.getStudent().setCourses(null);
+            g.getStudent().setGroups(null);
         }
 
-        generator.writeObject(studs);
+
+        generator.writeObject(grades);
     }
 }

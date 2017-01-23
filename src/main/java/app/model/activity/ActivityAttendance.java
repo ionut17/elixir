@@ -61,10 +61,3 @@ public class ActivityAttendance implements Item, Serializable {
     }
 }
 
-@Embeddable
-class ActivityAttendanceId implements Serializable {
-
-    private Long studentId;
-    private Long activityId;
-
-}

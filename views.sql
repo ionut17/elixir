@@ -95,7 +95,7 @@ insert into courses (title, year, semester) values ('Tehnici de programare pe pl
 insert into groups (name, year) values ('A4',3);
 insert into groups (name, year) values ('A5',3);
 insert into groups (name, year) values ('A6',3);
-insert into groups (name, year) values ('Licenta', 3);
+insert into groups (name, year) values ('Licenta 2016-2017', 3);
 
 insert into groups_students (student_id, group_id) values (1,2);
 insert into groups_students (student_id, group_id) values (1,4);
@@ -124,15 +124,22 @@ insert into course_ownerships (lecturer_id, course_id, type) values (2,2,'owner'
 insert into course_ownerships (lecturer_id, course_id, type) values (3,3,'owner');
 
 /*Activities & Types*/
+insert into activity_types (name) values ('curs');
 insert into activity_types (name) values ('laborator');
 insert into activity_types (name) values ('seminar');
 insert into activity_types (name) values ('proiect');
 insert into activity_types (name) values ('test');
 insert into activity_types (name) values ('colocviu');
 
-insert into activities(type_id, date, course_id, name) values (1,TIMESTAMP '2017-01-17 15:36:38',1,'Laborator 1');
+insert into activities(type_id, date, course_id, name) values (1,TIMESTAMP '2017-01-17 15:36:38',1,'Curs 1');
+insert into activities(type_id, date, course_id, name) values (2,TIMESTAMP '2017-01-17 15:36:38',1,'Laborator 1');
+insert into activities(type_id, date, course_id, name) values (2,TIMESTAMP '2017-01-18 15:36:38',1,'Laborator 2');
 insert into activity_attendances(student_id, activity_id) VALUES (1,1);
-insert into activity_grades(student_id, activity_id, value) VALUES (2,1,8);
+insert into activity_attendances(student_id, activity_id) VALUES (1,2);
+insert into activity_attendances(student_id, activity_id) VALUES (2,2);
+insert into activity_grades(student_id, activity_id, value) VALUES (1,2,8);
+insert into activity_grades(student_id, activity_id, value) VALUES (1,3,9);
+insert into activity_grades(student_id, activity_id, value) VALUES (2,3,10);
 
 
 /*Sample Selects*/

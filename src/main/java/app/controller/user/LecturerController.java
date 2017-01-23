@@ -1,6 +1,7 @@
 package app.controller.user;
 
 import app.controller.common.BaseController;
+import app.model.dto.LecturerDto;
 import app.model.user.Lecturer;
 import app.service.user.LecturerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,8 @@ public class LecturerController extends BaseController {
     //-------------------Retrieve All Lecturers--------------------------------------------------------
 
     @RequestMapping(value = "/lecturers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Lecturer>> listAllLecturers() {
-        List<Lecturer> lecturers = lecturerService.findAll();
+    public ResponseEntity<List<LecturerDto>> listAllLecturers() {
+        List<LecturerDto> lecturers = lecturerService.findAll();
         if (lecturers.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT); //HttpStatus.NOT_FOUND
         }
@@ -33,8 +34,8 @@ public class LecturerController extends BaseController {
     //-------------------Retrieve Single Lecturer--------------------------------------------------------
 
     @RequestMapping(value = "/lecturers/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Lecturer> getLecturerById(@PathVariable("id") int id) {
-        Lecturer lecturer = lecturerService.findById(id);
+    public ResponseEntity<LecturerDto> getLecturerById(@PathVariable("id") long id) {
+        LecturerDto lecturer = lecturerService.findById(id);
         if (lecturer == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -42,8 +43,8 @@ public class LecturerController extends BaseController {
     }
 
     @RequestMapping(value = "/lecturers/email/{email:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Lecturer> getLecturerByEmail(@PathVariable("email") String email) {
-        Lecturer lecturer = lecturerService.findByEmail(email);
+    public ResponseEntity<LecturerDto> getLecturerByEmail(@PathVariable("email") String email) {
+        LecturerDto lecturer = lecturerService.findByEmail(email);
         if (lecturer == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -53,7 +54,7 @@ public class LecturerController extends BaseController {
     //-------------------Create a Lecturer--------------------------------------------------------
 
     @RequestMapping(value = "/lecturers", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Void> createLecturer(@RequestBody Lecturer lecturer, UriComponentsBuilder ucBuilder) {
+    public ResponseEntity<Void> createLecturer(@RequestBody LecturerDto lecturer, UriComponentsBuilder ucBuilder) {
         if (lecturerService.entityExist(lecturer)) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -68,8 +69,8 @@ public class LecturerController extends BaseController {
     //-------------------Update a Lecturer--------------------------------------------------------
 
     @RequestMapping(value = "/lecturers/{id}", method = RequestMethod.PATCH)
-    public ResponseEntity<Lecturer> updateLecturer(@PathVariable("id") long id, @RequestBody Lecturer lecturer) {
-        Lecturer currentLecturer = lecturerService.findById(id);
+    public ResponseEntity<LecturerDto> updateLecturer(@PathVariable("id") long id, @RequestBody Lecturer lecturer) {
+        LecturerDto currentLecturer = lecturerService.findById(id);
 
         if (currentLecturer == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -86,8 +87,8 @@ public class LecturerController extends BaseController {
     //-------------------Delete a Lecturer--------------------------------------------------------
 
     @RequestMapping(value = "/lecturers/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Lecturer> deleteLecturer(@PathVariable("id") long id) {
-        Lecturer lecturer = lecturerService.findById(id);
+    public ResponseEntity<LecturerDto> deleteLecturer(@PathVariable("id") long id) {
+        LecturerDto lecturer = lecturerService.findById(id);
         if (lecturer == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by Ionut on 19-Dec-16.
  */
-public interface LecturerRepository extends BaseRepository<Lecturer>, Repository<Lecturer, Long> {
+public interface LecturerRepository extends BaseRepository<Lecturer, Long>, Repository<Lecturer, Long> {
 
     List<Lecturer> findByFirstName(String firstName);
 

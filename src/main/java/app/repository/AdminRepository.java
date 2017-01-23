@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by Ionut on 19-Dec-16.
  */
-public interface AdminRepository extends BaseRepository<Admin>, Repository<Admin, Long> {
+public interface AdminRepository extends BaseRepository<Admin, Long>, Repository<Admin, Long> {
 
     List<Admin> findByFirstName(String firstName);
 

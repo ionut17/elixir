@@ -1,10 +1,13 @@
 package app.service.user;
 
+import app.model.dto.UserDto;
 import app.model.user.User;
 import app.repository.AdminRepository;
 import app.repository.LecturerRepository;
 import app.repository.StudentRepository;
 import app.repository.UserRepository;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -14,6 +17,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,19 +42,22 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
+    private ModelMapper modelMapper;
+    @Autowired
     private Logger logger;
 
     public UserServiceImpl() {
     }
 
     @Override
-    public List<User> findAll() {
-        return users.findAll();
+    public List<UserDto> findAll() {
+        Type listType = new TypeToken<List<UserDto>>() {}.getType();
+        return modelMapper.map(users.findAll(), listType);
     }
 
     @Override
-    public User findByEmail(String email) {
-        return users.findByEmail(email);
+    public UserDto findByEmail(String email) {
+        return modelMapper.map(users.findByEmail(email), UserDto.class);
     }
 
     /**

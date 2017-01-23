@@ -6,7 +6,7 @@ import app.service.common.BaseService;
 
 import java.util.List;
 
-public interface ActivityService extends BaseService<Activity> {
+public interface ActivityService extends BaseService<Activity, Long> {
 
     List<ActivityJoin> findAllJoin();
 

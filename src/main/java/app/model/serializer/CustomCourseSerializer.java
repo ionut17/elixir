@@ -31,6 +31,7 @@ public class CustomCourseSerializer extends StdSerializer<Course> {
         course.setLecturers(null);
         course.setStudents(null);
         course.setActivities(null);
+
         generator.writeObject(course);
     }
 }

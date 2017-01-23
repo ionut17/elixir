@@ -1,10 +1,11 @@
 package app.service.user;
 
+import app.model.dto.LecturerDto;
 import app.model.user.Lecturer;
 import app.service.common.BaseService;
 
-public interface LecturerService extends BaseService<Lecturer> {
+public interface LecturerService extends BaseService<LecturerDto, Long> {
 
-    Lecturer findByEmail(String email);
+    LecturerDto findByEmail(String email);
 
 }

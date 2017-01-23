@@ -28,9 +28,14 @@ public class CustomStudentSerializer extends StdSerializer<Student> {
             SerializerProvider provider)
             throws IOException, JsonProcessingException {
 
+
+//        JSONStudent jsonStudent;
+//        generator.writeObject(jsonStudent);
+//
         student.setGroups(null);
         student.setCourses(null);
         student.setAttendances(null);
+        student.setGrades(null);
 
         generator.writeObject(student);
     }

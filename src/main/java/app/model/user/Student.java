@@ -3,6 +3,7 @@ package app.model.user;
 import app.model.Course;
 import app.model.Group;
 import app.model.activity.ActivityAttendance;
+import app.model.activity.ActivityGrade;
 import app.model.serializer.CustomCourseListSerializer;
 import app.model.serializer.CustomGroupListSerializer;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -42,7 +43,14 @@ public class Student extends AbstractUser {
     private List<Course> courses = new ArrayList<Course>();
 
     @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityAttendance.class, cascade = CascadeType.ALL)
-    private List<ActivityAttendance> attendances;
+    @Fetch(value = FetchMode.SUBSELECT)
+//    @JsonSerialize(using = CustomActivityAttendanceListSerializer.class)
+    private List<ActivityAttendance> attendances = new ArrayList<ActivityAttendance>();
+
+    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityGrade.class, cascade = CascadeType.ALL)
+    @Fetch(value = FetchMode.SUBSELECT)
+//    @JsonSerialize(using = CustomActivityGradeListSerializer.class)
+    private List<ActivityGrade> grades = new ArrayList<ActivityGrade>();
 
     //Constructors
 
@@ -77,5 +85,13 @@ public class Student extends AbstractUser {
 
     public void setAttendances(List<ActivityAttendance> attendances) {
         this.attendances = attendances;
+    }
+
+    public List<ActivityGrade> getGrades() {
+        return grades;
+    }
+
+    public void setGrades(List<ActivityGrade> grades) {
+        this.grades = grades;
     }
 }
