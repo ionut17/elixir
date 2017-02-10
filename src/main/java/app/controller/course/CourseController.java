@@ -1,7 +1,9 @@
 package app.controller.course;
 
+import app.auth.JwtAuthenticatedUser;
 import app.controller.common.BaseController;
 import app.model.Course;
+import app.model.user.User;
 import app.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;

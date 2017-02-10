@@ -2,9 +2,16 @@ package app.service.activity;
 
 import app.model.activity.Activity;
 import app.model.activity.ActivityJoin;
+import app.model.user.Student;
+import app.model.user.User;
+import app.repository.LecturerRepository;
+import app.repository.StudentRepository;
 import app.repository.activity.ActivityJoinRepository;
 import app.repository.activity.ActivityRepository;
+import app.service.AuthDetailsService;
+import app.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -12,6 +19,8 @@ import java.util.List;
 @Component("activityService")
 public class ActivityServiceImpl implements ActivityService {
 
+    @Autowired
+    AuthDetailsService authDetailsService;
     @Autowired
     ActivityRepository activities;
     @Autowired
@@ -27,6 +36,16 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     public List<ActivityJoin> findAllJoin() {
+        //Return activities of student or all for lecturer/admin
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()) {
+            case "student":
+                return activitiesJoin.findByIdUserIdId(authenticatedUser.getId());
+            case "lecturer":
+                //TODO return only lecturer's courses activities
+            case "admin":
+                return activitiesJoin.findAll();
+        }
         return activitiesJoin.findAll();
     }
 

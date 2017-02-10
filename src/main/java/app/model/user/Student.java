@@ -3,6 +3,7 @@ package app.model.user;
 import app.model.Course;
 import app.model.Group;
 import app.model.activity.ActivityAttendance;
+import app.model.activity.ActivityFile;
 import app.model.activity.ActivityGrade;
 import app.model.serializer.CustomCourseListSerializer;
 import app.model.serializer.CustomGroupListSerializer;
@@ -52,6 +53,11 @@ public class Student extends AbstractUser {
 //    @JsonSerialize(using = CustomActivityGradeListSerializer.class)
     private List<ActivityGrade> grades = new ArrayList<ActivityGrade>();
 
+    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityFile.class, cascade = CascadeType.ALL)
+    @Fetch(value = FetchMode.SUBSELECT)
+//    @JsonSerialize(using = CustomActivityFileListSerializer.class)
+    private List<ActivityFile> files = new ArrayList<>();
+
     //Constructors
 
     public Student(String password, String firstName, String lastName, String email) {
@@ -93,5 +99,13 @@ public class Student extends AbstractUser {
 
     public void setGrades(List<ActivityGrade> grades) {
         this.grades = grades;
+    }
+
+    public List<ActivityFile> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<ActivityFile> files) {
+        this.files = files;
     }
 }

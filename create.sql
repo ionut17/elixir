@@ -1,6 +1,7 @@
 create table activities (id  bigserial not null, date timestamp not null, name varchar(100) not null, course_id int8 not null, type_id int8 not null, primary key (id))
 create table activities_join (activity_id int8 not null, role varchar(100) not null, user_id int8 not null, user_type varchar(255) not null, primary key (activity_id, role, user_id, user_type))
 create table activity_attendances (activity_id int8 not null, student_id int8 not null, primary key (activity_id, student_id))
+create table activity_files (activity_id int8 not null, student_id int8 not null, extension varchar(255) not null, file_id int8 not null, file_name varchar(255) not null, primary key (activity_id, student_id))
 create table activity_grades (activity_id int8 not null, student_id int8 not null, value int4 not null, primary key (activity_id, student_id))
 create table activity_types (id  bigserial not null, name varchar(255) not null, primary key (id))
 create table admins (id  bigserial not null, email varchar(30) not null, first_name varchar(30) not null, last_name varchar(30) not null, password varchar(60) not null, primary key (id))
@@ -25,6 +26,8 @@ alter table activities_join add constraint FK5b6wls29jq4u3u1iv299n8req foreign k
 alter table activities_join add constraint FKfps83a155e2cj32r8gustl22r foreign key (user_id, user_type) references users
 alter table activity_attendances add constraint FKii9npa9oxy9sfyyd1a67uld0a foreign key (activity_id) references activities
 alter table activity_attendances add constraint FKrm0lea22nt12yoaevnugwvuss foreign key (student_id) references students
+alter table activity_files add constraint FKcm0vyu610nhvgoeyu0dcqrpx4 foreign key (activity_id) references activities
+alter table activity_files add constraint FKp0uhxw3v8lrcux8iuu5q5dr9v foreign key (student_id) references students
 alter table activity_grades add constraint FK4ud2h9ansq8o1c64mjlgitl9k foreign key (activity_id) references activities
 alter table activity_grades add constraint FKpalbmehq99kkugb5cs3huj5i foreign key (student_id) references students
 alter table course_attendants add constraint FKdw865xwqemphyjtcko0oqs4nq foreign key (course_id) references courses

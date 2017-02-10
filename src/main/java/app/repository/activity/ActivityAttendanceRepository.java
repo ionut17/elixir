@@ -11,4 +11,6 @@ public interface ActivityAttendanceRepository extends BaseRepository<ActivityAtt
 
     List<ActivityAttendance> findByIdActivityId(Long id);
 
+    List<ActivityAttendance> findByIdStudentId(Long id);
+
 }

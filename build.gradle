@@ -43,6 +43,8 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-security")
     compile("org.modelmapper:modelmapper:0.7.7")
     compile('postgresql:postgresql:9.1-901-1.jdbc4')
+    compile("commons-io:commons-io:2.4")
+    compile("io.jsonwebtoken:jjwt:0.7.0")
     compile("org.springframework:spring-jdbc")
     compile("com.h2database:h2")
     testCompile("junit:junit")

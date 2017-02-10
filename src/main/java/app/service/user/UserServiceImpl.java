@@ -1,5 +1,6 @@
 package app.service.user;
 
+import app.model.LoginCredentials;
 import app.model.dto.UserDto;
 import app.model.user.User;
 import app.repository.AdminRepository;
@@ -14,12 +15,14 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Component("userService")
 public class UserServiceImpl implements UserService {
@@ -40,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
     //Other dependencies
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
@@ -59,6 +62,22 @@ public class UserServiceImpl implements UserService {
     public UserDto findByEmail(String email) {
         return modelMapper.map(users.findByEmail(email), UserDto.class);
     }
+
+
+    /**
+     * Authentication Login
+     */
+    public User verifyCredentials(LoginCredentials credentials) {
+        User user = users.findByEmail(credentials.getEmail());
+        String encoded = passwordEncoder.encode(credentials.getPassword());
+        if (user!=null){
+            if (passwordEncoder.matches(credentials.getPassword(), user.getPassword())){
+                return user;
+            }
+        }
+        return null;
+    }
+
 
     /**
      * UserDetailsService Implementation

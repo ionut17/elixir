@@ -3,6 +3,7 @@ package app.controller.activity;
 import app.controller.common.BaseController;
 import app.model.activity.*;
 import app.service.activity.ActivityAttendanceService;
+import app.service.activity.ActivityFileService;
 import app.service.activity.ActivityGradeService;
 import app.service.activity.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ public class ActivityController extends BaseController {
     ActivityAttendanceService activityAttendanceService;
     @Autowired
     ActivityGradeService activityGradeService;
+    @Autowired
+    ActivityFileService activityFileService;
 
     //-------------------Retrieve All Activities--------------------------------------------------------
 
@@ -103,6 +106,35 @@ public class ActivityController extends BaseController {
     @RequestMapping(value = "/grades/{activity_id}/{student_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ActivityGrade> getGradesByCompositeId(@PathVariable("activity_id") long activityId, @PathVariable("student_id") long studentId) {
         ActivityGrade attendance = activityGradeService.findById(new ActivityGradeId(activityId, studentId));
+        if (attendance == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(attendance, HttpStatus.OK);
+    }
+
+    //-------------------Retrieve All Files--------------------------------------------------------
+
+    @RequestMapping(value = "/files", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity<List<ActivityFile>> listAllFiles() {
+        List<ActivityFile> files = activityFileService.findAll();
+        if (files.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<>(files, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/files/{activity_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<ActivityFile>> getFilesOfActivity(@PathVariable("activity_id") long activityId) {
+        List<ActivityFile> files = activityFileService.findByActivityId(activityId);
+        if (files == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(files, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/files/{activity_id}/{student_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ActivityFile> getFilesByCompositeId(@PathVariable("activity_id") long activityId, @PathVariable("student_id") long studentId) {
+        ActivityFile attendance = activityFileService.findById(new ActivityFileId(activityId, studentId));
         if (attendance == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

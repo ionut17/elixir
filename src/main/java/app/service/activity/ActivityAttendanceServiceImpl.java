@@ -6,7 +6,10 @@ import app.model.activity.ActivityAttendanceId;
 import app.model.user.User;
 import app.repository.activity.ActivityAttendanceRepository;
 import app.repository.activity.ActivityRepository;
+import app.service.AuthDetailsService;
+import app.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +18,8 @@ import java.util.List;
 @Component("activityAttendanceService")
 public class ActivityAttendanceServiceImpl implements ActivityAttendanceService {
 
+    @Autowired
+    AuthDetailsService authDetailsService;
     @Autowired
     ActivityAttendanceRepository activityAttendances;
     @Autowired
@@ -26,6 +31,15 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
 
     @Override
     public List<ActivityAttendance> findAll() {
+        //Return courses of student/lecturer or all courses for admin
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()) {
+            case "student":
+                return activityAttendances.findByIdStudentId(authenticatedUser.getId());
+            case "lecturer":
+            case "admin":
+                return activityAttendances.findAll();
+        }
         return activityAttendances.findAll();
     }
 

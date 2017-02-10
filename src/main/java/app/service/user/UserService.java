@@ -1,5 +1,6 @@
 package app.service.user;
 
+import app.model.LoginCredentials;
 import app.model.dto.UserDto;
 import app.model.user.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,5 +12,7 @@ public interface UserService extends UserDetailsService {
     List<UserDto> findAll();
 
     UserDto findByEmail(String email);
+
+    User verifyCredentials(LoginCredentials credentials);
 
 }

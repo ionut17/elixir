@@ -36,6 +36,7 @@ public class CustomStudentSerializer extends StdSerializer<Student> {
         student.setCourses(null);
         student.setAttendances(null);
         student.setGrades(null);
+        student.setFiles(null);
 
         generator.writeObject(student);
     }

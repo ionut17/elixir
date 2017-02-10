@@ -1,8 +1,14 @@
 package app.service;
 
 import app.model.Group;
+import app.model.user.Lecturer;
+import app.model.user.Student;
+import app.model.user.User;
 import app.repository.GroupRepository;
+import app.repository.LecturerRepository;
+import app.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -11,7 +17,11 @@ import java.util.List;
 public class GroupServiceImpl implements GroupService {
 
     @Autowired
+    AuthDetailsService authDetailsService;
+    @Autowired
     GroupRepository groups;
+    @Autowired
+    StudentRepository students;
 
     public GroupServiceImpl() {
 
@@ -19,6 +29,16 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public List<Group> findAll() {
+        //Return courses of student/lecturer or all courses for admin
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+                Student student = students.findOne(authenticatedUser.getId());
+                return student.getGroups();
+            case "lecturer":
+            case "admin":
+                return groups.findAll();
+        }
         return groups.findAll();
     }
 

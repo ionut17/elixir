@@ -3,6 +3,7 @@ package app.model.dto;
 import app.model.Course;
 import app.model.Group;
 import app.model.activity.ActivityAttendance;
+import app.model.activity.ActivityFile;
 import app.model.activity.ActivityGrade;
 import app.model.common.Item;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,6 +30,8 @@ public class StudentDto implements Item {
     private List<ActivityAttendance> attendances;
 
     private List<ActivityGrade> grades;
+
+    private List<ActivityFile> files;
 
     //Constructors
 
@@ -107,5 +110,13 @@ public class StudentDto implements Item {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<ActivityFile> getFiles() {
+        return files;
+    }
+
+    public void setFiles(List<ActivityFile> files) {
+        this.files = files;
     }
 }

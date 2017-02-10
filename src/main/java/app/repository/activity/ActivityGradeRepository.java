@@ -13,4 +13,6 @@ public interface ActivityGradeRepository extends BaseRepository<ActivityGrade, A
 
     List<ActivityGrade> findByIdActivityId(Long id);
 
+    List<ActivityGrade> findByIdStudentId(Long id);
+
 }
