@@ -3,13 +3,14 @@ package app.model.dto;
 import app.model.Course;
 import app.model.Group;
 import app.model.activity.ActivityAttendance;
+import app.model.activity.ActivityFile;
 import app.model.activity.ActivityGrade;
 import app.model.common.Item;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
-public class ResourceDTO implements Item {
+public class ResourceDto implements Item {
 
     private Long courseId;
 
@@ -25,10 +26,19 @@ public class ResourceDTO implements Item {
 
     //Constructors
 
-    public ResourceDTO() {
+    public ResourceDto() {
     }
 
-    public ResourceDTO(Long courseId, Long typeId, String name, Long studentId, String fileName) {
+    public ResourceDto(ActivityFile activityFile){
+        this.setCourseId(activityFile.getActivity().getCourse().getId());
+        this.setTypeId(activityFile.getActivity().getType().getId());
+        this.setName(activityFile.getActivity().getName());
+        this.setStudentId(activityFile.getStudent().getId());
+        this.setFileName(activityFile.getFileName());
+        this.setExtension(activityFile.getExtension());
+    }
+
+    public ResourceDto(Long courseId, Long typeId, String name, Long studentId, String fileName) {
         this.setCourseId(courseId);
         this.setTypeId(typeId);
         this.setName(name);
@@ -36,7 +46,7 @@ public class ResourceDTO implements Item {
         this.setFileName(fileName);
     }
 
-    public ResourceDTO(Long courseId, Long typeId, String name, Long studentId, String fileName, String extension) {
+    public ResourceDto(Long courseId, Long typeId, String name, Long studentId, String fileName, String extension) {
         this.setCourseId(courseId);
         this.setTypeId(typeId);
         this.setName(name);

@@ -1,16 +1,28 @@
 package app.service;
 
 import app.model.Course;
+import app.model.activity.Activity;
+import app.model.dto.CourseDto;
+import app.model.dto.LecturerDto;
+import app.model.dto.StudentDto;
 import app.service.common.BaseService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
-public interface CourseService extends BaseService<Course, Long> {
+public interface CourseService extends BaseService<CourseDto, Long> {
 
-    Course findByTitle(String title);
+    CourseDto findByTitle(String title);
 
-    List<Course> findByYear(int year);
+    List<CourseDto> findByYear(int year);
 
-    List<Course> findBySemester(int semester);
+    List<CourseDto> findBySemester(int semester);
+
+    Page<LecturerDto> getLecturers(CourseDto course, int page);
+
+    Page<StudentDto> getStudents(CourseDto course, int page);
+
+    Page<Activity> getActivities(CourseDto course, int page);
 
 }

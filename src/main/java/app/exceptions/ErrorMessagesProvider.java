@@ -15,4 +15,6 @@ public class ErrorMessagesProvider {
 
     public static final String INVALID_CREDENTIALS = "Datele de autentificare introduse sunt invalide.";
 
+    public static final String NOT_AUTHORIZED = "Nu esti autorizat sa accesezi aceasta resursa.";
+    public static final String NOT_FOUND = "Resursa ceruta nu a putut fi gasita.";
 }

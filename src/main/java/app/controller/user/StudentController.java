@@ -2,10 +2,17 @@ package app.controller.user;
 
 import app.controller.common.BaseController;
 import app.model.Group;
+import app.model.Pager;
+import app.model.activity.ActivityAttendance;
+import app.model.activity.ActivityFile;
+import app.model.activity.ActivityGrade;
+import app.model.dto.CourseDto;
 import app.model.dto.StudentDto;
+import app.model.dto.UserDto;
 import app.service.GroupService;
 import app.service.user.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,7 +20,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class StudentController extends BaseController {
@@ -27,12 +36,25 @@ public class StudentController extends BaseController {
 
     @RequestMapping(value = "/students", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<List<StudentDto>> listAllStudents() {
-        List<StudentDto> students = studentService.findAll();
-        if (students.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); //HttpStatus.NOT_FOUND
+    public ResponseEntity listAllStudents(@RequestParam(value="page", required = false) Integer page, @RequestParam(value="search", required = false) String query) {
+        int targetPage = page!=null ? page.intValue() : 0;
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<StudentDto> students;
+        if (query!=null){
+            students = studentService.searchByPage(query, targetPage);
+        } else{
+            students = studentService.findAllByPage(targetPage);
         }
-        return new ResponseEntity<>(students, HttpStatus.OK);
+        if (students==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (students.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(students);
+        toReturn.put("content", students.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
     //-------------------Retrieve Single Student--------------------------------------------------------
@@ -55,15 +77,91 @@ public class StudentController extends BaseController {
         return new ResponseEntity<>(student, HttpStatus.OK);
     }
 
-    //-------------------Retrieve Groups of Student--------------------------------------------------------
+    //-------------------Retrieve Elements of Student--------------------------------------------------------
 
-    @RequestMapping(value = "/students/{id}/groups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Group>> getGroupsOfStudent(@PathVariable("id") long id) {
+    @RequestMapping(value = "/students/{id}/attendances", params={"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getAttendancesOfStudent(@PathVariable("id") long id, @RequestParam("page") int page) {
         StudentDto student = studentService.findById(id);
         if (student == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(student.getGroups(), HttpStatus.OK);
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityAttendance> attendances = studentService.getAttendances(student, page);
+        if (attendances.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(attendances);
+        toReturn.put("content", attendances.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/students/{id}/grades", params={"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getGradesOfStudent(@PathVariable("id") long id, @RequestParam("page") int page) {
+        StudentDto student = studentService.findById(id);
+        if (student == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityGrade> grades = studentService.getGrades(student, page);
+        if (grades.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(grades);
+        toReturn.put("content", grades.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/students/{id}/files", params={"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getFilesOfStudent(@PathVariable("id") long id, @RequestParam("page") int page) {
+        StudentDto student = studentService.findById(id);
+        if (student == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityFile> files = studentService.getFiles(student, page);
+        if (files.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(files);
+        toReturn.put("content", files.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/students/{id}/groups", params={"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getGroupsOfStudent(@PathVariable("id") long id, @RequestParam("page") int page) {
+        StudentDto student = studentService.findById(id);
+        if (student == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<Group> groups = studentService.getGroups(student, page);
+        if (groups.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(groups);
+        toReturn.put("content", groups.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/students/{id}/courses", params={"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getCoursesOfStudent(@PathVariable("id") long id, @RequestParam("page") int page) {
+        StudentDto student = studentService.findById(id);
+        if (student == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<CourseDto> courses = studentService.getCourses(student, page);
+        if (courses.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(courses);
+        toReturn.put("content", courses.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
     //-------------------Create a Student--------------------------------------------------------

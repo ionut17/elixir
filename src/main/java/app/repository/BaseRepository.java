@@ -11,10 +11,10 @@ public interface BaseRepository<T extends Item, K> {
 
     List<T> findAll();
 
-    T findOne(K id);
+//    T findOne(K id);
 
-    T save(T persisted);
+//    T save(T persisted);
 
-    void delete(K id);
+//    void delete(K id);
 
 }

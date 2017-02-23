@@ -1,14 +1,30 @@
 package app.service.user;
 
 import app.model.Group;
+import app.model.activity.ActivityAttendance;
+import app.model.activity.ActivityFile;
+import app.model.activity.ActivityGrade;
+import app.model.dto.CourseDto;
 import app.model.dto.StudentDto;
+import app.model.user.Lecturer;
 import app.model.user.Student;
+import app.model.user.User;
+import app.repository.CourseRepository;
+import app.repository.GroupRepository;
 import app.repository.StudentRepository;
+import app.repository.activity.ActivityAttendanceRepository;
+import app.repository.activity.ActivityFileRepository;
+import app.repository.activity.ActivityGradeRepository;
+import app.service.AuthDetailsService;
 import app.service.common.BaseService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -22,7 +38,21 @@ public class StudentServiceImpl implements StudentService {
     @Autowired
     private StudentRepository students;
 
+    //Other repositories
+    @Autowired
+    private ActivityAttendanceRepository activityAttendanceRepository;
+    @Autowired
+    private ActivityGradeRepository activityGradeRepository;
+    @Autowired
+    private ActivityFileRepository activityFileRepository;
+    @Autowired
+    private GroupRepository groupRepository;
+    @Autowired
+    private CourseRepository courseRepository;
+
     //Other dependencies
+    @Autowired
+    AuthDetailsService authDetailsService;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -40,7 +70,35 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public Page<StudentDto> findAllByPage(int page) {
+        Type listType = new TypeToken<Page<StudentDto>>() {}.getType();
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+                //Revoke access of student to list of students
+                return null;
+            case "lecturer":
+            case "admin":
+                return modelMapper.map(students.findAll(new PageRequest(page, 10)), listType);
+        }
+        return modelMapper.map(students.findAll(new PageRequest(page, 10)), listType);
+    }
+
+
+    @Override
     public StudentDto findById(Long id) {
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+                //Give access only to student's own page
+                if (authenticatedUser.getId().equals(id)){
+                    return modelMapper.map(students.findOne(id), StudentDto.class);
+                }
+                return null;
+            case "lecturer":
+            case "admin":
+                return modelMapper.map(students.findOne(id), StudentDto.class);
+        }
         return modelMapper.map(students.findOne(id), StudentDto.class);
     }
 
@@ -73,7 +131,113 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public StudentDto findByEmail(String email) {
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+                //Give access only to student's own page
+                if (authenticatedUser.getEmail().equals(email)){
+                    return modelMapper.map(students.findByEmail(email), StudentDto.class);
+                }
+                return null;
+            case "lecturer":
+            case "admin":
+                return modelMapper.map(students.findByEmail(email), StudentDto.class);
+        }
         return modelMapper.map(students.findByEmail(email), StudentDto.class);
+    }
+
+    @Override
+    public Page<ActivityAttendance> getAttendances(StudentDto student, int page) {
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+                //Give access only to student's own page
+                if (authenticatedUser.getId().equals(student.getId())){
+                    return activityAttendanceRepository.findByIdStudentId(student.getId(), new PageRequest(page, 10));
+                }
+                return null;
+            case "lecturer":
+            case "admin":
+                return activityAttendanceRepository.findByIdStudentId(student.getId(), new PageRequest(page, 10));
+        }
+        return activityAttendanceRepository.findByIdStudentId(student.getId(), new PageRequest(page, 10));
+    }
+
+    @Override
+    public Page<ActivityGrade> getGrades(StudentDto student, int page) {
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+                //Give access only to student's own page
+                if (authenticatedUser.getId().equals(student.getId())){
+                    return activityGradeRepository.findByIdStudentId(student.getId(), new PageRequest(page, 10));
+                }
+                return null;
+            case "lecturer":
+            case "admin":
+                return activityGradeRepository.findByIdStudentId(student.getId(), new PageRequest(page, 10));
+        }
+        return activityGradeRepository.findByIdStudentId(student.getId(), new PageRequest(page, 10));
+    }
+
+    @Override
+    public Page<ActivityFile> getFiles(StudentDto student, int page) {
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+                //Give access only to student's own page
+                if (authenticatedUser.getId().equals(student.getId())){
+                    return activityFileRepository.findByIdStudentId(student.getId(), new PageRequest(page, 10));
+                }
+                return null;
+            case "lecturer":
+            case "admin":
+            return activityFileRepository.findByIdStudentId(student.getId(), new PageRequest(page, 10));
+        }
+        return activityFileRepository.findByIdStudentId(student.getId(), new PageRequest(page, 10));
+    }
+
+    @Override
+    public Page<Group> getGroups(StudentDto student, int page) {
+        Student found = students.findOne(student.getId());
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+                //Give access only to student's own page
+                if (authenticatedUser.getId().equals(student.getId())){
+                    return groupRepository.findByStudents(found, new PageRequest(page, 10));
+                }
+                return null;
+            case "lecturer":
+            case "admin":
+                return groupRepository.findByStudents(found, new PageRequest(page, 10));
+        }
+        return groupRepository.findByStudents(found, new PageRequest(page, 10));
+    }
+
+    @Override
+    public Page<CourseDto> getCourses(StudentDto student, int page) {
+        Type listType = new TypeToken<Page<CourseDto>>() {}.getType();
+        Student found = students.findOne(student.getId());
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+                //Give access only to student's own page
+                if (authenticatedUser.getId().equals(student.getId())){
+                    return modelMapper.map(courseRepository.findByStudents(found, new PageRequest(page, 10)), listType);
+                }
+                return null;
+            case "lecturer":
+            case "admin":
+                return modelMapper.map(courseRepository.findByStudents(found, new PageRequest(page, 10)), listType);
+        }
+        return modelMapper.map(courseRepository.findByStudents(found, new PageRequest(page, 10)), listType);
+    }
+
+    @Override
+    public Page<StudentDto> searchByPage(String query, int page) {
+        Type listType = new TypeToken<Page<StudentDto>>() {}.getType();
+        return modelMapper.map(students.findDistinctByFirstNameOrLastNameOrEmailAllIgnoreCaseContaining(query, query, query, new PageRequest(page, 10)), listType);
     }
 
     @Override

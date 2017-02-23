@@ -1,16 +1,23 @@
 package app.service;
 
 import app.model.Group;
+import app.model.dto.CourseDto;
 import app.model.user.Lecturer;
 import app.model.user.Student;
 import app.model.user.User;
 import app.repository.GroupRepository;
 import app.repository.LecturerRepository;
 import app.repository.StudentRepository;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 @Component("groupService")
@@ -22,6 +29,8 @@ public class GroupServiceImpl implements GroupService {
     GroupRepository groups;
     @Autowired
     StudentRepository students;
+    @Autowired
+    private ModelMapper modelMapper;
 
     public GroupServiceImpl() {
 
@@ -43,7 +52,32 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public Page<Group> findAllByPage(int page) {
+        Type listType = new TypeToken<Page<Group>>() {}.getType();
+        //Return courses of student/lecturer or all courses for admin
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+                Student student = students.findOne(authenticatedUser.getId());
+                return modelMapper.map(groups.findByStudents(student, new PageRequest(page, 10)), listType);
+            case "lecturer":
+            case "admin":
+                return groups.findAll(new PageRequest(page, 10));
+        }
+        return groups.findAll(new PageRequest(page, 10));
+    }
+
+    @Override
     public Group findById(Long id) {
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+                //Student can't view groups composition
+                return null;
+            case "lecturer":
+            case "admin":
+                return groups.findOne(id);
+        }
         return groups.findOne(id);
     }
 

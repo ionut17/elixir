@@ -7,10 +7,13 @@ import app.repository.AdminRepository;
 import app.repository.LecturerRepository;
 import app.repository.StudentRepository;
 import app.repository.UserRepository;
+import app.service.AuthDetailsService;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -43,6 +46,8 @@ public class UserServiceImpl implements UserService {
 
     //Other dependencies
     @Autowired
+    private AuthDetailsService authDetailsService;
+    @Autowired
     private BCryptPasswordEncoder passwordEncoder;
     @Autowired
     private ModelMapper modelMapper;
@@ -59,8 +64,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Page<UserDto> findAllByPage(int page){
+        Type listType = new TypeToken<Page<UserDto>>() {}.getType();
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+            case "lecturer":
+                return null;
+            case "admin":
+                return modelMapper.map(users.findAll(new PageRequest(page, 10)), listType);
+        }
+        return modelMapper.map(users.findAll(new PageRequest(page, 10)), listType);
+    }
+
+    @Override
     public UserDto findByEmail(String email) {
         return modelMapper.map(users.findByEmail(email), UserDto.class);
+    }
+
+    @Override
+    public Page<UserDto> searchByPage(String query, int page) {
+        Type listType = new TypeToken<Page<UserDto>>() {}.getType();
+        return modelMapper.map(users.findDistinctByFirstNameOrLastNameOrEmailAllIgnoreCaseContaining(query, query, query, new PageRequest(page, 10)), listType);
     }
 
 

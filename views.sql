@@ -83,16 +83,33 @@ insert into students (email, first_name, last_name, password) values ('rares.sta
 insert into students (email, first_name, last_name, password) values ('liana.tucar@gmail.com','Liana','Tucar','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
 insert into students (email, first_name, last_name, password) values ('mihai.nechita@gmail.com','Mihai','Nechita','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
 
+insert into students (email, first_name, last_name, password) values ('sebastian.albisteanu@gmail.com','Sebastian','Albisteanu','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
+insert into students (email, first_name, last_name, password) values ('vladimir.balan@gmail.com','Vladimir','Balan','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
+insert into students (email, first_name, last_name, password) values ('ciprian.baetu@gmail.com','Ciprian','Baetu','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
+insert into students (email, first_name, last_name, password) values ('sebastian.ciobanu@gmail.com','Sebastian','Ciobanu','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
+insert into students (email, first_name, last_name, password) values ('catalina.jijie@gmail.com','Catalina','Jijie','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
+insert into students (email, first_name, last_name, password) values ('dan.nastasa@gmail.com','Dan','Nastasa','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
+insert into students (email, first_name, last_name, password) values ('ilinca.roman@gmail.com','Ilinca','Roman','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
+insert into students (email, first_name, last_name, password) values ('catalin.popusoi@gmail.com','Catalin','Popusoi','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
+
+
 insert into lecturers (email, first_name, last_name, password) values ('cfrasinaru@info.uaic.ro','Cristian','Frasinaru','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
 insert into lecturers (email, first_name, last_name, password) values ('olariu@gmail.ro','Florin','Olariu','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
 insert into lecturers (email, first_name, last_name, password) values ('dgavrilut@bitdefender.ro','Dragos','Gavrilut','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
 insert into lecturers (email, first_name, last_name, password) values ('ciortuz@info.uaic.ro','Liviu','Ciortuz','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
+
+insert into lecturers (email, first_name, last_name, password) values ('ftiplea@info.uaic.ro','Ferucio','Tiplea','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
+insert into lecturers (email, first_name, last_name, password) values ('sburaga@info.uaic.ro','Sabin','Buraga','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
+insert into lecturers (email, first_name, last_name, password) values ('anca.nica@info.uaic.ro','Anca','Nica','$2a$10$I.6VrNIWMDCiUkBAZ95n9OtrrdS7KyzrcWNPbsa24xaX6z1W/MV.C');
+
 
 /*Courses and groups*/
 insert into courses (title, year, semester) values ('Java - Programare Avansata',2,2);
 insert into courses (title, year, semester) values ('Introducere in .NET', 3, 1);
 insert into courses (title, year, semester) values ('Tehnici de programare pe platforma Android', 3, 1);
 insert into courses (title, year, semester) values ('Machine Learning', 3, 1);
+insert into courses (title, year, semester) values ('Securitatea Informatiei', 3, 1);
+insert into courses (title, year, semester) values ('Tehnologii Web', 2, 2);
 
 insert into groups (name, year) values ('A4',3);
 insert into groups (name, year) values ('A5',3);
@@ -113,22 +130,35 @@ insert into groups_students (student_id, group_id) values (7,1);
 insert into course_attendants (student_id, course_id) values (1,1);
 insert into course_attendants (student_id, course_id) values (1,2);
 insert into course_attendants (student_id, course_id) values (1,4);
+insert into course_attendants (student_id, course_id) values (1,5);
+insert into course_attendants (student_id, course_id) values (1,6);
 insert into course_attendants (student_id, course_id) values (2,1);
 insert into course_attendants (student_id, course_id) values (2,2);
 insert into course_attendants (student_id, course_id) values (2,4);
+insert into course_attendants (student_id, course_id) values (2,5);
+insert into course_attendants (student_id, course_id) values (2,6);
 insert into course_attendants (student_id, course_id) values (3,1);
 insert into course_attendants (student_id, course_id) values (3,4);
 insert into course_attendants (student_id, course_id) values (4,1);
 insert into course_attendants (student_id, course_id) values (4,4);
+insert into course_attendants (student_id, course_id) values (4,5);
 insert into course_attendants (student_id, course_id) values (5,1);
 insert into course_attendants (student_id, course_id) values (5,3);
+insert into course_attendants (student_id, course_id) values (5,5);
 insert into course_attendants (student_id, course_id) values (6,3);
 insert into course_attendants (student_id, course_id) values (7,3);
+insert into course_attendants (student_id, course_id) values (7,4);
+insert into course_attendants (student_id, course_id) values (7,5);
+insert into course_attendants (student_id, course_id) values (7,6);
+
 
 insert into course_ownerships (lecturer_id, course_id, type) values (1,1,'owner');
 insert into course_ownerships (lecturer_id, course_id, type) values (2,2,'owner');
 insert into course_ownerships (lecturer_id, course_id, type) values (3,3,'owner');
 insert into course_ownerships (lecturer_id, course_id, type) values (4,4,'owner');
+insert into course_ownerships (lecturer_id, course_id, type) values (5,5,'owner');
+insert into course_ownerships (lecturer_id, course_id, type) values (7,5,'assistant');
+insert into course_ownerships (lecturer_id, course_id, type) values (6,6,'owner');
 
 /*Activities & Types*/
 insert into activity_types (name) values ('curs');
@@ -142,13 +172,28 @@ insert into activity_types (name) values ('colocviu');
 insert into activities(type_id, date, course_id, name) values (1,TIMESTAMP '2017-01-17 15:36:38',1,'Curs 1');
 insert into activities(type_id, date, course_id, name) values (2,TIMESTAMP '2017-01-17 15:36:38',1,'Laborator 1');
 insert into activities(type_id, date, course_id, name) values (2,TIMESTAMP '2017-01-18 15:36:38',1,'Laborator 2');
+insert into activities(type_id, date, course_id, name) values (2,TIMESTAMP '2017-01-18 15:36:38',1,'Laborator 3');
+insert into activities(type_id, date, course_id, name) values (2,TIMESTAMP '2017-01-18 15:36:38',1,'Laborator 4');
+insert into activities(type_id, date, course_id, name) values (2,TIMESTAMP '2017-01-18 15:36:38',1,'Laborator 5');
+insert into activities(type_id, date, course_id, name) values (2,TIMESTAMP '2017-01-18 15:36:38',1,'Laborator 6');
+insert into activities(type_id, date, course_id, name) values (2,TIMESTAMP '2017-01-18 15:36:38',1,'Laborator 7');
+insert into activities(type_id, date, course_id, name) values (2,TIMESTAMP '2017-01-18 15:36:38',1,'Laborator 8');
+insert into activities(type_id, date, course_id, name) values (2,TIMESTAMP '2017-01-18 15:36:38',1,'Laborator 9');
+insert into activities(type_id, date, course_id, name) values (2,TIMESTAMP '2017-01-18 15:36:38',1,'Laborator 10');
 insert into activities(type_id, date, course_id, name) values (6,TIMESTAMP '2017-01-26 14:00:00',4,'Partial 2');
 insert into activity_attendances(student_id, activity_id) VALUES (1,1);
 insert into activity_attendances(student_id, activity_id) VALUES (1,2);
 insert into activity_attendances(student_id, activity_id) VALUES (1,3);
 insert into activity_attendances(student_id, activity_id) VALUES (1,4);
+insert into activity_attendances(student_id, activity_id) VALUES (1,5);
+insert into activity_attendances(student_id, activity_id) VALUES (1,6);
+insert into activity_attendances(student_id, activity_id) VALUES (1,7);
+insert into activity_attendances(student_id, activity_id) VALUES (1,8);
+insert into activity_attendances(student_id, activity_id) VALUES (1,9);
+insert into activity_attendances(student_id, activity_id) VALUES (1,10);
+insert into activity_attendances(student_id, activity_id) VALUES (1,11);
 insert into activity_attendances(student_id, activity_id) VALUES (2,2);
-insert into activity_attendances(student_id, activity_id) VALUES (2,4);
+insert into activity_attendances(student_id, activity_id) VALUES (2,12);
 insert into activity_grades(student_id, activity_id, value) VALUES (1,2,8);
 insert into activity_grades(student_id, activity_id, value) VALUES (1,3,9);
 insert into activity_grades(student_id, activity_id, value) VALUES (1,4,7);

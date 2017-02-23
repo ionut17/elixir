@@ -3,17 +3,27 @@ package app.service.activity;
 import app.model.activity.Activity;
 import app.model.activity.ActivityAttendance;
 import app.model.activity.ActivityAttendanceId;
+import app.model.user.Lecturer;
+import app.model.user.Student;
 import app.model.user.User;
+import app.repository.LecturerRepository;
+import app.repository.StudentRepository;
 import app.repository.activity.ActivityAttendanceRepository;
 import app.repository.activity.ActivityRepository;
 import app.service.AuthDetailsService;
 import app.service.JwtService;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import java.lang.reflect.Type;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component("activityAttendanceService")
 public class ActivityAttendanceServiceImpl implements ActivityAttendanceService {
@@ -23,7 +33,11 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
     @Autowired
     ActivityAttendanceRepository activityAttendances;
     @Autowired
-    ActivityRepository activityRepository;
+    private ActivityRepository activityRepository;
+    @Autowired
+    private StudentRepository studentRepository;
+    @Autowired
+    private LecturerRepository lecturers;
 
     public ActivityAttendanceServiceImpl() {
 
@@ -35,12 +49,28 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
         User authenticatedUser = authDetailsService.getAuthenticatedUser();
         switch (authenticatedUser.getType()) {
             case "student":
-                return activityAttendances.findByIdStudentId(authenticatedUser.getId());
+                return activityAttendances.findByIdStudentId(authenticatedUser.getId(), new PageRequest(0, 10)).getContent();
             case "lecturer":
             case "admin":
                 return activityAttendances.findAll();
         }
         return activityAttendances.findAll();
+    }
+
+    @Override
+    public Page<ActivityAttendance> findAllByPage(int page) {
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        Type listType = new TypeToken<Page<ActivityAttendance>>() {}.getType();
+        switch (authenticatedUser.getType()) {
+            case "student":
+                return activityAttendances.findByIdStudentId(authenticatedUser.getId(), new PageRequest(page, 10));
+            case "lecturer":
+                Lecturer lecturer = lecturers.findOne(authenticatedUser.getId());
+                return activityAttendances.findByActivityCourseLecturers(lecturer, new PageRequest(page, 10));
+            case "admin":
+                return activityAttendances.findAll(new PageRequest(page, 10));
+        }
+        return activityAttendances.findAll(new PageRequest(page, 10));
     }
 
     @Override
@@ -69,11 +99,20 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
     }
 
     @Override
-    public List<ActivityAttendance> findByActivityId(Long id) {
+    public Page<ActivityAttendance> findByActivityIdByPage(long id, int page) {
         Activity activity = activityRepository.findOne(id);
         if (activity == null){
             return null;
         }
-        return activityAttendances.findByIdActivityId(id);
+        return activityAttendances.findByIdActivityId(id, new PageRequest(page, 10));
+    }
+
+    @Override
+    public Page<ActivityAttendance> findByStudentIdByPage(long id, int page) {
+        Student student = studentRepository.findOne(id);
+        if (student == null){
+            return null;
+        }
+        return activityAttendances.findByIdStudentId(id, new PageRequest(page, 10));
     }
 }

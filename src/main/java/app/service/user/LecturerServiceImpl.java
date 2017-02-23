@@ -1,13 +1,17 @@
 package app.service.user;
 
 import app.model.Course;
+import app.model.dto.CourseDto;
 import app.model.dto.LecturerDto;
 import app.model.user.Lecturer;
+import app.repository.CourseRepository;
 import app.repository.LecturerRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +24,10 @@ public class LecturerServiceImpl implements LecturerService {
     //Main repository
     @Autowired
     private LecturerRepository lecturers;
+
+    //Other repositories
+    @Autowired
+    private CourseRepository courseRepository;
 
     //Other dependencies
     @Autowired
@@ -39,9 +47,13 @@ public class LecturerServiceImpl implements LecturerService {
     }
 
     @Override
+    public Page<LecturerDto> findAllByPage(int page) {
+        Type listType = new TypeToken<Page<LecturerDto>>() {}.getType();
+        return modelMapper.map(lecturers.findAll(new PageRequest(page, 10)), listType);
+    }
+
+    @Override
     public LecturerDto findById(Long id) {
-        List<Course> courses = lecturers.findOne(id).getCourses();
-        int x = 3;
         return modelMapper.map(lecturers.findOne(id),LecturerDto.class);
     }
 
@@ -75,6 +87,19 @@ public class LecturerServiceImpl implements LecturerService {
     @Override
     public LecturerDto findByEmail(String email) {
         return modelMapper.map(lecturers.findByEmail(email), LecturerDto.class);
+    }
+
+    @Override
+    public Page<CourseDto> getCourses(LecturerDto lecturer, int page){
+        Type listType = new TypeToken<Page<CourseDto>>() {}.getType();
+        Lecturer found = lecturers.findOne(lecturer.getId());
+        return modelMapper.map(courseRepository.findByLecturers(found, new PageRequest(page, 10)), listType);
+    }
+
+    @Override
+    public Page<LecturerDto> searchByPage(String query, int page) {
+        Type listType = new TypeToken<Page<LecturerDto>>() {}.getType();
+        return modelMapper.map(lecturers.findDistinctByFirstNameOrLastNameOrEmailAllIgnoreCaseContaining(query, query, query, new PageRequest(page, 10)), listType);
     }
 
 }

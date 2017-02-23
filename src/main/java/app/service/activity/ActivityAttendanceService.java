@@ -3,10 +3,13 @@ package app.service.activity;
 import app.model.activity.ActivityAttendance;
 import app.model.activity.ActivityAttendanceId;
 import app.service.common.BaseService;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
 public interface ActivityAttendanceService extends BaseService<ActivityAttendance, ActivityAttendanceId> {
 
-    List<ActivityAttendance> findByActivityId(Long id);
+    Page<ActivityAttendance> findByActivityIdByPage(long id, int page);
+
+    Page<ActivityAttendance> findByStudentIdByPage(long id, int page);
 }

@@ -33,6 +33,7 @@ public class CustomActivityAttendanceListSerializer extends StdSerializer<List<A
         for (ActivityAttendance a : attendances) {
             a.getStudent().setGrades(null);
             a.getStudent().setAttendances(null);
+            a.getStudent().setFiles(null);
             a.getStudent().setCourses(null);
             a.getStudent().setGroups(null);
 //            a.getStudent().setGrades(null);

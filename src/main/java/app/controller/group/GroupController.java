@@ -2,8 +2,10 @@ package app.controller.group;
 
 import app.controller.common.BaseController;
 import app.model.Group;
+import app.model.Pager;
 import app.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,7 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class GroupController extends BaseController {
@@ -22,14 +26,29 @@ public class GroupController extends BaseController {
     //-------------------Retrieve All Groups--------------------------------------------------------
 
     @RequestMapping(value = "/groups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public
-    @ResponseBody
-    ResponseEntity<List<Group>> listAllGroups() {
-        List<Group> groups = groupService.findAll();
-        if (groups.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public @ResponseBody ResponseEntity listAllGroups() {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<Group> groups = groupService.findAllByPage(0);
+        if (groups.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
-        return new ResponseEntity<>(groups, HttpStatus.OK);
+        Pager pager = new Pager(groups);
+        toReturn.put("content", groups.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/groups", params={"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity listAllGroups(@RequestParam("page") int page) {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<Group> groups = groupService.findAllByPage(0);
+        if (groups.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(groups);
+        toReturn.put("content", groups.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
     //-------------------Retrieve Single Group--------------------------------------------------------

@@ -1,18 +1,22 @@
 package app.controller.activity;
 
 import app.controller.common.BaseController;
+import app.model.Pager;
 import app.model.activity.*;
 import app.service.activity.ActivityAttendanceService;
 import app.service.activity.ActivityFileService;
 import app.service.activity.ActivityGradeService;
 import app.service.activity.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ActivityController extends BaseController {
@@ -33,6 +37,9 @@ public class ActivityController extends BaseController {
     @ResponseBody
     ResponseEntity<List<Activity>> listAllActivities() {
         List<Activity> activities = activityService.findAll();
+        if (activities==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
         if (activities.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
@@ -42,36 +49,101 @@ public class ActivityController extends BaseController {
     //-------------------Retrieve All Activities View--------------------------------------------------------
 
     @RequestMapping(value = "/activities/join", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public
-    @ResponseBody
-    ResponseEntity<List<ActivityJoin>> listAllActivitiesJoin() {
-        List<ActivityJoin> activities = activityService.findAllJoin();
-        if (activities.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public @ResponseBody ResponseEntity listAllActivitiesJoin() {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityJoin> activities = activityService.findAllJoinByPage(0);
+        if (activities==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(activities, HttpStatus.OK);
+        if (activities.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(activities);
+        toReturn.put("content", activities.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/activities/join", params={"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity listAllActivitiesJoin(@RequestParam("page") int page) {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityJoin> activities = activityService.findAllJoinByPage(page);
+        if (activities==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (activities.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(activities);
+        toReturn.put("content", activities.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
     //-------------------Retrieve All Attendances--------------------------------------------------------
 
     @RequestMapping(value = "/attendances", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public
-    @ResponseBody
-    ResponseEntity<List<ActivityAttendance>> listAllAttendances() {
-        List<ActivityAttendance> activities = activityAttendanceService.findAll();
-        if (activities.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public @ResponseBody ResponseEntity listAllAttendances() {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityAttendance> attendances = activityAttendanceService.findAllByPage(0);
+        if (attendances==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(activities, HttpStatus.OK);
+        if (attendances.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(attendances);
+        toReturn.put("content", attendances.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/attendances", params={"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity listAllAttendances(@RequestParam("page") int page) {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityAttendance> attendances = activityAttendanceService.findAllByPage(page);
+        if (attendances==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (attendances.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(attendances);
+        toReturn.put("content", attendances.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/attendances/{activity_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ActivityAttendance>> getAttendancesOfActivity(@PathVariable("activity_id") long activityId) {
-        List<ActivityAttendance> attendances = activityAttendanceService.findByActivityId(activityId);
-        if (attendances == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity getAttendancesOfActivity(@PathVariable("activity_id") long activityId) {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityAttendance> attendances = activityAttendanceService.findByActivityIdByPage(activityId, 0);
+        if (attendances==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(attendances, HttpStatus.OK);
+        if (attendances.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(attendances);
+        toReturn.put("content", attendances.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/attendances/{activity_id}", params = {"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getAttendancesOfActivity(@PathVariable("activity_id") long activityId, @RequestParam("page") int page) {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityAttendance> attendances = activityAttendanceService.findByActivityIdByPage(activityId, page);
+        if (attendances==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (attendances.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(attendances);
+        toReturn.put("content", attendances.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/attendances/{activity_id}/{student_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -86,21 +158,67 @@ public class ActivityController extends BaseController {
     //-------------------Retrieve All Grades--------------------------------------------------------
 
     @RequestMapping(value = "/grades", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity<List<ActivityGrade>> listAllGrades() {
-        List<ActivityGrade> grades = activityGradeService.findAll();
-        if (grades.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public @ResponseBody ResponseEntity listAllGrades() {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityGrade> grades = activityGradeService.findAllByPage(0);
+        if (grades==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(grades, HttpStatus.OK);
+        if (grades.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(grades);
+        toReturn.put("content", grades.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/grades", params={"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity listAllGrades(@RequestParam("page") int page) {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityGrade> grades = activityGradeService.findAllByPage(page);
+        if (grades==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (grades.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(grades);
+        toReturn.put("content", grades.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/grades/{activity_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ActivityGrade>> getGradesOfActivity(@PathVariable("activity_id") long activityId) {
-        List<ActivityGrade> grades = activityGradeService.findByActivityId(activityId);
-        if (grades == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity getGradesOfActivity(@PathVariable("activity_id") long activityId) {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityGrade> grades = activityGradeService.findByActivityIdByPage(activityId, 0);
+        if (grades==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(grades, HttpStatus.OK);
+        if (grades.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(grades);
+        toReturn.put("content", grades.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/grades/{activity_id}", params={"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getGradesOfActivity(@PathVariable("activity_id") long activityId, @RequestParam("page") int page) {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityGrade> grades = activityGradeService.findByActivityIdByPage(activityId, page);
+        if (grades==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (grades.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(grades);
+        toReturn.put("content", grades.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/grades/{activity_id}/{student_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -115,21 +233,67 @@ public class ActivityController extends BaseController {
     //-------------------Retrieve All Files--------------------------------------------------------
 
     @RequestMapping(value = "/files", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity<List<ActivityFile>> listAllFiles() {
-        List<ActivityFile> files = activityFileService.findAll();
-        if (files.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public @ResponseBody ResponseEntity listAllFiles() {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityFile> files = activityFileService.findAllByPage(0);
+        if (files==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(files, HttpStatus.OK);
+        if (files.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(files);
+        toReturn.put("content", files.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/files", params = {"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity listAllFiles(@RequestParam("page") int page) {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityFile> files = activityFileService.findAllByPage(page);
+        if (files==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (files.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(files);
+        toReturn.put("content", files.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/files/{activity_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<ActivityFile>> getFilesOfActivity(@PathVariable("activity_id") long activityId) {
-        List<ActivityFile> files = activityFileService.findByActivityId(activityId);
-        if (files == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity getFilesOfActivity(@PathVariable("activity_id") long activityId) {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityFile> files = activityFileService.findByActivityIdByPage(activityId, 0);
+        if (files==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(files, HttpStatus.OK);
+        if (files.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(files);
+        toReturn.put("content", files.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/files/{activity_id}", params={"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getFilesOfActivity(@PathVariable("activity_id") long activityId, @RequestParam("page") int page) {
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<ActivityFile> files = activityFileService.findByActivityIdByPage(activityId, page);
+        if (files==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (files.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(files);
+        toReturn.put("content", files.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/files/{activity_id}/{student_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

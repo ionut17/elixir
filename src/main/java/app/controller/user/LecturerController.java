@@ -1,10 +1,13 @@
 package app.controller.user;
 
 import app.controller.common.BaseController;
+import app.model.Pager;
+import app.model.dto.CourseDto;
 import app.model.dto.LecturerDto;
 import app.model.user.Lecturer;
 import app.service.user.LecturerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class LecturerController extends BaseController {
@@ -23,12 +28,25 @@ public class LecturerController extends BaseController {
     //-------------------Retrieve All Lecturers--------------------------------------------------------
 
     @RequestMapping(value = "/lecturers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<LecturerDto>> listAllLecturers() {
-        List<LecturerDto> lecturers = lecturerService.findAll();
-        if (lecturers.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); //HttpStatus.NOT_FOUND
+    public ResponseEntity listAllLecturers(@RequestParam(value="page", required = false) Integer page, @RequestParam(value = "search", required = false) String query) {
+        int targetPage = page != null ? page.intValue() : 0;
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<LecturerDto> lecturers;
+        if (query!=null){
+            lecturers = lecturerService.searchByPage(query, targetPage);
+        } else{
+            lecturers = lecturerService.findAllByPage(targetPage);
         }
-        return new ResponseEntity<>(lecturers, HttpStatus.OK);
+        if (lecturers==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (lecturers.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(lecturers);
+        toReturn.put("content", lecturers.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
     //-------------------Retrieve Single Lecturer--------------------------------------------------------
@@ -49,6 +67,25 @@ public class LecturerController extends BaseController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(lecturer, HttpStatus.OK);
+    }
+
+    //-------------------Retrieve Elements of Lecturer--------------------------------------------------------
+
+    @RequestMapping(value = "/lecturers/{id}/courses", params={"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getCoursesOfLecturer(@PathVariable("id") long id, @RequestParam("page") int page) {
+        LecturerDto lecturer = lecturerService.findById(id);
+        if (lecturer == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<CourseDto> courses = lecturerService.getCourses(lecturer, page);
+        if (courses.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(courses);
+        toReturn.put("content", courses.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
     //-------------------Create a Lecturer--------------------------------------------------------

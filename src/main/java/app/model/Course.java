@@ -2,6 +2,7 @@ package app.model;
 
 import app.model.activity.Activity;
 import app.model.common.Item;
+import app.model.serializer.CustomActivityListSerializer;
 import app.model.serializer.CustomLecturerListSerializer;
 import app.model.serializer.CustomStudentListSerializer;
 import app.model.user.Lecturer;
@@ -47,6 +48,8 @@ public class Course implements Item, Serializable {
     private List<Student> students;
 
     @OneToMany(mappedBy = "course", fetch = FetchType.EAGER, targetEntity = Activity.class, cascade = CascadeType.ALL)
+    @Fetch(value = FetchMode.SUBSELECT)
+//    @JsonSerialize(using = CustomActivityListSerializer.class)
     private List<Activity> activities;
 
     public Course(String name, int yearOfStudy) {
@@ -107,5 +110,14 @@ public class Course implements Item, Serializable {
 
     public void setActivities(List<Activity> activities) {
         this.activities = activities;
+    }
+
+    public boolean hasOwner(long lecturerId){
+        for (Lecturer lecturer : lecturers){
+            if (lecturer.getId().equals(lecturerId)){
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -1,9 +1,15 @@
 package app.repository.activity;
 
+import app.model.Course;
 import app.model.activity.Activity;
 import app.repository.BaseRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.Repository;
 
-public interface ActivityRepository extends BaseRepository<Activity, Long>, Repository<Activity, Long> {
+public interface ActivityRepository extends BaseRepository<Activity, Long>, PagingAndSortingRepository<Activity, Long> {
+
+    Page<Activity> findByCourseId(Long id, Pageable pageable);
 
 }

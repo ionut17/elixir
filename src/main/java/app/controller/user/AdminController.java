@@ -1,9 +1,11 @@
 package app.controller.user;
 
 import app.controller.common.BaseController;
+import app.model.Pager;
 import app.model.user.Admin;
 import app.service.user.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,7 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class AdminController extends BaseController {
@@ -22,12 +26,25 @@ public class AdminController extends BaseController {
     //-------------------Retrieve All Admins--------------------------------------------------------
 
     @RequestMapping(value = "/admins", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Admin>> listAllAdmins() {
-        List<Admin> admins = adminService.findAll();
-        if (admins.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT); //HttpStatus.NOT_FOUND
+    public ResponseEntity listAllAdmins(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "search", required = false) String query) {
+        int targetPage = page != null ? page.intValue() : 0;
+        Map<String, Object> toReturn = new HashMap<>();
+        Page<Admin> admins;
+        if (query!=null){
+            admins = adminService.searchByPage(query, targetPage);
+        } else{
+            admins = adminService.findAllByPage(targetPage);
         }
-        return new ResponseEntity<>(admins, HttpStatus.OK);
+        if (admins==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (admins.getSize() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        Pager pager = new Pager(admins);
+        toReturn.put("content", admins.getContent());
+        toReturn.put("pager", pager);
+        return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
     //-------------------Retrieve Single Admin--------------------------------------------------------

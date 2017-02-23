@@ -30,12 +30,13 @@ public class CustomActivityListSerializer extends StdSerializer<List<Activity>> 
             SerializerProvider provider)
             throws IOException, JsonProcessingException {
 
-        List<Activity> actvs = new ArrayList<>();
+        List<Activity> actv = new ArrayList<>();
         for (Activity a : activities) {
             a.setCourse(null);
-            actvs.add(a);
+            a.setType(null);
+            actv.add(a);
         }
 
-        generator.writeObject(actvs);
+        generator.writeObject(actv);
     }
 }
