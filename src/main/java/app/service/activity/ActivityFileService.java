@@ -9,9 +9,11 @@ import org.springframework.data.domain.Page;
 
 import java.util.List;
 
-public interface ActivityFileService extends BaseService<ActivityFile, ActivityFileId> {
+public interface ActivityFileService extends BaseService<ActivityFile, Long> {
 
     Page<ActivityFile> findByActivityIdByPage(long activityId, int page);
 
-    ActivityFile findByFileId(long fileId);
+    Page<ActivityFile> findByActivityIdAndStudentIdByPage(long activityId, long studentId, int page);
+
+//    ActivityFile findByFileId(long fileId);
 }

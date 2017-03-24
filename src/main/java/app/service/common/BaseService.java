@@ -11,6 +11,8 @@ public interface BaseService<T extends Item, K> {
 
     Page<T> findAllByPage(int page);
 
+    Page<T> searchByPage(String query, int page);
+
     T findById(K id);
 
     T add(T entity);

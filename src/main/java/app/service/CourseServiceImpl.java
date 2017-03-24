@@ -16,10 +16,7 @@ import app.repository.activity.ActivityRepository;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -85,6 +82,12 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public Page<CourseDto> searchByPage(String query, int page) {
+        Type listType = new TypeToken<Page<CourseDto>>() {}.getType();
+        return modelMapper.map(courses.findDistinctByTitleAllIgnoreCaseContaining(query, new PageRequest(page, 10)), listType);
+    }
+
+    @Override
     public CourseDto findById(Long id) {
         User authenticatedUser = authDetailsService.getAuthenticatedUser();
         switch (authenticatedUser.getType()){
@@ -142,12 +145,18 @@ public class CourseServiceImpl implements CourseService {
         User authenticatedUser = authDetailsService.getAuthenticatedUser();
         switch (authenticatedUser.getType()){
             case "student":
-                return null;
+                Student student = students.findOne(authenticatedUser.getId());
+                Course course1 = courses.findOne(course.getId());
+                if (student.getCourses().contains(course1)){
+                    return activities.findByCourseId(course.getId(), new PageRequest(page, 10, Sort.Direction.DESC, "date"));
+                } else{
+                    return null;
+                }
             case "lecturer":
             case "admin":
-                return activities.findByCourseId(course.getId(), new PageRequest(page, 10));
+                return activities.findByCourseId(course.getId(), new PageRequest(page, 10, Sort.Direction.DESC, "date"));
         }
-        return activities.findByCourseId(course.getId(), new PageRequest(page, 10));
+        return activities.findByCourseId(course.getId(), new PageRequest(page, 10, Sort.Direction.DESC, "date"));
     }
 
     @Override

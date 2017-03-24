@@ -12,13 +12,18 @@ buildscript {
 }
 
 apply plugin: 'java'
+//apply plugin: 'war'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 apply plugin: 'spring-boot'
 
+//war {
+//    baseName = 'elixir-api'
+//}
+
 jar {
-    baseName = 'gs-serving-web-content'
-    version = '0.1.0'
+    baseName = 'elixir-api'
+    version = '0.2.0'
 }
 
 repositories {
@@ -36,11 +41,15 @@ idea {
 }
 
 dependencies {
+//    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    compile("org.springframework.boot:spring-boot-starter-tomcat")
     compile("org.springframework.boot:spring-boot-starter")
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.springframework.boot:spring-boot-devtools")
     compile("org.springframework.boot:spring-boot-starter-security")
+//    compile("javax.servlet:javax.servlet-api")
+//    compile("org.apache.tomcat:catalina:6.0.48")
     compile("org.modelmapper:modelmapper:0.7.7")
     compile('postgresql:postgresql:9.1-901-1.jdbc4')
     compile("commons-io:commons-io:2.4")

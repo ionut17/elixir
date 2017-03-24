@@ -19,6 +19,10 @@ public interface ActivityGradeRepository extends BaseRepository<ActivityGrade, A
 
     Page<ActivityGrade> findByIdStudentId(Long id, Pageable pageable);
 
+    Page<ActivityGrade> findByActivityIdAndStudentId(Long activityId, Long studentId, Pageable pageable);
+
     Page<ActivityGrade> findByActivityCourseLecturers (Lecturer lecturer, Pageable pageable);
+
+    Page<ActivityGrade> findDistinctByActivityNameOrActivityCourseTitleOrStudentFirstNameOrStudentLastNameAllIgnoreCaseContaining(String activityName, String courseTitle, String studentFirstName, String studentLastName, Pageable pageable);
 
 }

@@ -10,9 +10,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "activity_types")
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id")
 public class ActivityType implements Item, Serializable {
 
     @Id

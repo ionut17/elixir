@@ -4,12 +4,15 @@ import app.model.common.Item;
 import app.model.serializer.CustomActivitySerializer;
 import app.model.serializer.CustomStudentSerializer;
 import app.model.user.Student;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Entity
 @Table(name = "ACTIVITY_FILES")
@@ -18,16 +21,16 @@ import java.io.Serializable;
         property = "id")
 public class ActivityFile implements Item, Serializable {
 
-    @EmbeddedId
-    private ActivityFileId id;
+//    @EmbeddedId
+//    private ActivityFileId id;
 
-    @MapsId("studentId")
+//    @MapsId("studentId")
     @ManyToOne
     @JoinColumn(name = "student_id", referencedColumnName = "id", nullable = false)
     @JsonSerialize(using = CustomStudentSerializer.class)
     private Student student;
 
-    @MapsId("activityId")
+//    @MapsId("activityId")
     @ManyToOne
     @JoinColumn(name = "activity_id", referencedColumnName = "id", nullable = false)
     @JsonSerialize(using = CustomActivitySerializer.class)
@@ -39,19 +42,27 @@ public class ActivityFile implements Item, Serializable {
     @Column(name = "extension", nullable = false)
     private String extension;
 
+    @Id
     @Column(name = "file_id", nullable = false)
-    private Long fileId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "upload_date", nullable = false)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @JsonFormat(pattern = "yyyy-MM-dd' 'hh:mm:ss") //yyyy-MM-dd'T'hh:mm:ss.SSSZ
+    private Date uploadDate;
 
     public ActivityFile() {
     }
 
-    public ActivityFileId getId() {
-        return id;
-    }
-
-    public void setId(ActivityFileId id) {
-        this.id = id;
-    }
+//    public ActivityFileId getId() {
+//        return id;
+//    }
+//
+//    public void setId(ActivityFileId id) {
+//        this.id = id;
+//    }
 
     public Student getStudent() {
         return student;
@@ -86,12 +97,20 @@ public class ActivityFile implements Item, Serializable {
         this.extension = extension;
     }
 
-    public Long getFileId() {
-        return fileId;
+    public Long getId() {
+        return id;
     }
 
-    public void setFileId(Long fileId) {
-        this.fileId = fileId;
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Date getUploadDate() {
+        return uploadDate;
+    }
+
+    public void setUploadDate(Date uploadDate) {
+        this.uploadDate = uploadDate;
     }
 }
 

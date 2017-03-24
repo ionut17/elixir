@@ -10,6 +10,10 @@ import org.springframework.data.repository.Repository;
 
 public interface ActivityRepository extends BaseRepository<Activity, Long>, PagingAndSortingRepository<Activity, Long> {
 
+    Page<Activity> findAll(Pageable pageable);
+
     Page<Activity> findByCourseId(Long id, Pageable pageable);
+
+    Page<Activity> findDistinctByNameOrCourseTitleOrTypeNameAllIgnoreCaseContaining(String activityName, String courseTitle, String typeName, Pageable pageable);
 
 }

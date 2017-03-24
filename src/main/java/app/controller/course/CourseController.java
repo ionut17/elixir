@@ -32,9 +32,18 @@ public class CourseController extends BaseController {
     //-------------------Retrieve All Courses--------------------------------------------------------
 
     @RequestMapping(value = "/courses", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity listAllCourses() {
+    public @ResponseBody ResponseEntity listAllCourses(@RequestParam(value="page", required = false) Integer page, @RequestParam(value="search", required = false) String query) {
+        int targetPage = page!=null ? page.intValue() : 0;
         Map<String, Object> toReturn = new HashMap<>();
-        Page<CourseDto> courses = courseService.findAllByPage(0);
+        Page<CourseDto> courses;
+        if (query!=null){
+            courses = courseService.searchByPage(query, targetPage);
+        } else{
+            courses = courseService.findAllByPage(targetPage);
+        }
+        if (courses==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
         if (courses.getSize() == 0) {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
@@ -44,17 +53,16 @@ public class CourseController extends BaseController {
         return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/courses", params={"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity listAllCourses(@RequestParam("page") int page) {
-        Map<String, Object> toReturn = new HashMap<>();
-        Page<CourseDto> courses = courseService.findAllByPage(page);
-        if (courses.getSize() == 0) {
+    @RequestMapping(value = "/courses/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity listAllCoursesUnpaged() {
+        List<CourseDto> courses = courseService.findAll();
+        if (courses==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (courses.size() == 0) {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
-        Pager pager = new Pager(courses);
-        toReturn.put("content", courses.getContent());
-        toReturn.put("pager", pager);
-        return new ResponseEntity(toReturn, HttpStatus.OK);
+        return new ResponseEntity(courses, HttpStatus.OK);
     }
 
     //-------------------Retrieve Single Course--------------------------------------------------------

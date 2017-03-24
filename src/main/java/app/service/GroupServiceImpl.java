@@ -68,6 +68,11 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public Page<Group> searchByPage(String query, int page) {
+        return groups.findDistinctByNameAllIgnoreCaseContaining(query, new PageRequest(page, 10));
+    }
+
+    @Override
     public Group findById(Long id) {
         User authenticatedUser = authDetailsService.getAuthenticatedUser();
         switch (authenticatedUser.getType()){

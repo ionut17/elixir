@@ -43,7 +43,7 @@ public class ActivityFileServiceImpl implements ActivityFileService {
         User authenticatedUser = authDetailsService.getAuthenticatedUser();
         switch (authenticatedUser.getType()) {
             case "student":
-                return activityFiles.findByIdStudentId(authenticatedUser.getId(), new PageRequest(0,10)).getContent();
+                return activityFiles.findByStudentId(authenticatedUser.getId(), new PageRequest(0,10)).getContent();
             case "lecturer":
             case "admin":
                 return activityFiles.findAll();
@@ -57,7 +57,7 @@ public class ActivityFileServiceImpl implements ActivityFileService {
         Type listType = new TypeToken<Page<ActivityFile>>() {}.getType();
         switch (authenticatedUser.getType()) {
             case "student":
-                return activityFiles.findByIdStudentId(authenticatedUser.getId(), new PageRequest(page, 10));
+                return activityFiles.findByStudentId(authenticatedUser.getId(), new PageRequest(page, 10));
             case "lecturer":
                 Lecturer lecturer = lecturers.findOne(authenticatedUser.getId());
                 return activityFiles.findByActivityCourseLecturers(lecturer, new PageRequest(page, 10));
@@ -68,7 +68,12 @@ public class ActivityFileServiceImpl implements ActivityFileService {
     }
 
     @Override
-    public ActivityFile findById(ActivityFileId id) {
+    public Page<ActivityFile> searchByPage(String query, int page) {
+        return activityFiles.findDistinctByActivityNameOrActivityCourseTitleOrStudentFirstNameOrStudentLastNameOrFileNameAllIgnoreCaseContaining(query, query, query, query, query, new PageRequest(page, 10));
+    }
+
+    @Override
+    public ActivityFile findById(Long id) {
         return activityFiles.findOne(id);
     }
 
@@ -83,7 +88,7 @@ public class ActivityFileServiceImpl implements ActivityFileService {
     }
 
     @Override
-    public void remove(ActivityFileId id) {
+    public void remove(Long id) {
         activityFiles.delete(id);
     }
 
@@ -95,14 +100,43 @@ public class ActivityFileServiceImpl implements ActivityFileService {
     @Override
     public Page<ActivityFile> findByActivityIdByPage(long id, int page) {
         Activity activity = activityRepository.findOne(id);
-        if (activity == null){
+        if (activity == null) {
             return null;
         }
-        return activityFiles.findByIdActivityId(id, new PageRequest(page, 10));
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()) {
+            case "student":
+                return activityFiles.findByActivityIdAndStudentId(id, authenticatedUser.getId(), new PageRequest(0, 10));
+            case "lecturer":
+            case "admin":
+                return activityFiles.findByActivityId(id, new PageRequest(page, 10));
+        }
+        return null;
     }
 
     @Override
-    public ActivityFile findByFileId(long fileId) {
-        return activityFiles.findByFileId(fileId);
+    public Page<ActivityFile> findByActivityIdAndStudentIdByPage(long activityId, long studentId, int page) {
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        Type listType = new TypeToken<Page<ActivityFile>>() {}.getType();
+        Activity activity = activityRepository.findOne(activityId);
+        if (activity == null){
+            return null;
+        }
+        switch (authenticatedUser.getType()) {
+            case "student":
+                if (authenticatedUser.getId().equals(studentId)){
+                    return activityFiles.findByActivityIdAndStudentId(activityId, studentId, new PageRequest(page, 10));
+                }
+                return null;
+            case "lecturer":
+            case "admin":
+                return activityFiles.findByActivityIdAndStudentId(activityId, studentId, new PageRequest(page, 10));
+        }
+        return null;
     }
+
+//    @Override
+//    public ActivityFile findByFileId(long fileId) {
+//        return activityFiles.findByFileId(fileId);
+//    }
 }

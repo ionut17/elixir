@@ -13,14 +13,18 @@ import org.springframework.data.repository.Repository;
 
 import java.util.List;
 
-public interface ActivityFileRepository extends BaseRepository<ActivityFile, ActivityFileId>, PagingAndSortingRepository<ActivityFile, ActivityFileId> {
+public interface ActivityFileRepository extends BaseRepository<ActivityFile, Long>, PagingAndSortingRepository<ActivityFile, Long> {
 
-    Page<ActivityFile> findByIdActivityId(Long id, Pageable pageable);
+    Page<ActivityFile> findByActivityId(Long id, Pageable pageable);
 
-    Page<ActivityFile> findByIdStudentId(Long id, Pageable pageable);
+    Page<ActivityFile> findByStudentId(Long id, Pageable pageable);
+
+    Page<ActivityFile> findByActivityIdAndStudentId(Long activityId, Long studentId, Pageable pageable);
 
     Page<ActivityFile> findByActivityCourseLecturers (Lecturer lecturer, Pageable pageable);
 
-    ActivityFile findByFileId(Long id);
+//    ActivityFile findByFileId(Long id);
+
+    Page<ActivityFile> findDistinctByActivityNameOrActivityCourseTitleOrStudentFirstNameOrStudentLastNameOrFileNameAllIgnoreCaseContaining(String activityName, String courseTitle, String studentFirstName, String studentLastName, String fileName, Pageable pageable);
 
 }

@@ -2,6 +2,7 @@ package app.repository.activity;
 
 import app.model.activity.ActivityAttendance;
 import app.model.activity.ActivityAttendanceId;
+import app.model.activity.ActivityGrade;
 import app.model.user.Lecturer;
 import app.repository.BaseRepository;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,10 @@ public interface ActivityAttendanceRepository extends BaseRepository<ActivityAtt
 
     Page<ActivityAttendance> findByIdStudentId(Long id, Pageable pageable);
 
+    Page<ActivityAttendance> findByActivityIdAndStudentId(Long activityId, Long studentId, Pageable pageable);
+
     Page<ActivityAttendance> findByActivityCourseLecturers (Lecturer lecturer, Pageable pageable);
+
+    Page<ActivityAttendance> findDistinctByActivityNameOrActivityCourseTitleOrStudentFirstNameOrStudentLastNameAllIgnoreCaseContaining(String activityName, String courseTitle, String studentFirstName, String studentLastName, Pageable pageable);
 
 }

@@ -13,6 +13,4 @@ public interface LecturerService extends BaseService<LecturerDto, Long> {
 
     Page<CourseDto> getCourses(LecturerDto lecturer, int page);
 
-    Page<LecturerDto> searchByPage(String query, int page);
-
 }

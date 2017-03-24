@@ -8,6 +8,4 @@ public interface AdminService extends BaseService<Admin, Long> {
 
     Admin findByEmail(String email);
 
-    Page<Admin> searchByPage(String query, int page);
-
 }

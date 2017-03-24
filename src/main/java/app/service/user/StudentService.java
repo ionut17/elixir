@@ -28,6 +28,4 @@ public interface StudentService extends BaseService<StudentDto, Long> {
 
     StudentDto removeGroupOfStudent(Group group, StudentDto student);
 
-    Page<StudentDto> searchByPage(String query, int page);
-
 }

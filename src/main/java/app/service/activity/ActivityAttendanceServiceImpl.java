@@ -74,6 +74,11 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
     }
 
     @Override
+    public Page<ActivityAttendance> searchByPage(String query, int page) {
+        return activityAttendances.findDistinctByActivityNameOrActivityCourseTitleOrStudentFirstNameOrStudentLastNameAllIgnoreCaseContaining(query, query, query, query, new PageRequest(page, 10));
+    }
+
+    @Override
     public ActivityAttendance findById(ActivityAttendanceId id) {
         return activityAttendances.findOne(id);
     }
@@ -99,20 +104,28 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
     }
 
     @Override
-    public Page<ActivityAttendance> findByActivityIdByPage(long id, int page) {
-        Activity activity = activityRepository.findOne(id);
-        if (activity == null){
-            return null;
-        }
-        return activityAttendances.findByIdActivityId(id, new PageRequest(page, 10));
-    }
-
-    @Override
     public Page<ActivityAttendance> findByStudentIdByPage(long id, int page) {
         Student student = studentRepository.findOne(id);
         if (student == null){
             return null;
         }
         return activityAttendances.findByIdStudentId(id, new PageRequest(page, 10));
+    }
+
+    @Override
+    public Page<ActivityAttendance> findByActivityIdByPage(long id, int page) {
+        Activity activity = activityRepository.findOne(id);
+        if (activity == null) {
+            return null;
+        }
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()) {
+            case "student":
+                return activityAttendances.findByActivityIdAndStudentId(id, authenticatedUser.getId(), new PageRequest(0, 10));
+            case "lecturer":
+            case "admin":
+                return activityAttendances.findByIdActivityId(id, new PageRequest(page, 10));
+        }
+        return null;
     }
 }

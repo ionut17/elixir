@@ -22,4 +22,6 @@ public interface CourseRepository extends BaseRepository<Course, Long>, PagingAn
 
     Page<Course> findByLecturers(Lecturer lecturer, Pageable pageable);
 
+    Page<Course> findDistinctByTitleAllIgnoreCaseContaining(String title, Pageable pageable);
+
 }

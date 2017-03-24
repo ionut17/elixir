@@ -1,21 +1,27 @@
 package app.service.activity;
 
+import app.model.Course;
 import app.model.activity.Activity;
 import app.model.activity.ActivityJoin;
+import app.model.activity.ActivityType;
 import app.model.user.Lecturer;
 import app.model.user.Student;
 import app.model.user.User;
+import app.repository.CourseRepository;
 import app.repository.LecturerRepository;
 import app.repository.StudentRepository;
 import app.repository.activity.ActivityJoinRepository;
 import app.repository.activity.ActivityRepository;
+import app.repository.activity.ActivityTypeRepository;
 import app.service.AuthDetailsService;
 import app.service.JwtService;
+import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -28,17 +34,25 @@ public class ActivityServiceImpl implements ActivityService {
 
     //Main repository
     @Autowired
-    ActivityJoinRepository activitiesJoin;
+    private ActivityJoinRepository activitiesJoin;
 
     //Other repositories
     @Autowired
-    ActivityRepository activities;
+    private ActivityRepository activities;
+    @Autowired
+    private StudentRepository students;
     @Autowired
     private LecturerRepository lecturers;
+    @Autowired
+    private CourseRepository courses;
+    @Autowired
+    private ActivityTypeRepository activityTypes;
 
     //Other dependencies
     @Autowired
-    AuthDetailsService authDetailsService;
+    private AuthDetailsService authDetailsService;
+    @Autowired
+    private ModelMapper modelMapper;
 
     public ActivityServiceImpl() {
 
@@ -51,7 +65,12 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Page<Activity> findAllByPage(int page) {
-        return activities.findAll(new PageRequest(page, 10));
+        return activities.findAll(new PageRequest(page, 10, Sort.Direction.DESC, "date"));
+    }
+
+    @Override
+    public Page<Activity> searchByPage(String query, int page) {
+        return activities.findDistinctByNameOrCourseTitleOrTypeNameAllIgnoreCaseContaining(query, query, query, new PageRequest(page, 10, Sort.Direction.DESC, "date"));
     }
 
     public List<ActivityJoin> findAllJoin() {
@@ -69,19 +88,98 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    public List<ActivityType> findAllTypes() {
+        return activityTypes.findAll();
+    }
+
+    @Override
+    public ActivityType findType(Long id) { return activityTypes.findOne(id); }
+
+    @Override
+    public Page<ActivityJoin> findByActivityIdJoinByPage(Long id, int page) {
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()) {
+            case "student":
+                return activitiesJoin.findByIdActivityIdAndIdUserIdId(id, authenticatedUser.getId(), new PageRequest(page, 10, Sort.Direction.DESC, "activity.date"));
+            case "lecturer":
+            case "admin":
+                return activitiesJoin.findByActivityId(id, new PageRequest(page, 10, Sort.Direction.DESC, "activity.date"));
+        }
+        return null;
+    }
+
+    @Override
+    public Page<Activity> findByCourseByPage(long id, int page) {
+        //Return activities of student or all for lecturer/admin
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()) {
+            case "student":
+                Student student = students.findOne(authenticatedUser.getId());
+                Course course1 = courses.findOne(id);
+                if (student.getCourses().contains(course1)){
+                    return activities.findByCourseId(id, new PageRequest(page, 10, Sort.Direction.DESC, "date"));
+                } else{
+                    return null;
+                }
+            case "lecturer":
+                Lecturer lecturer = lecturers.findOne(authenticatedUser.getId());
+                Course course2 = courses.findOne(id);
+                if (lecturer.getCourses().contains(course2)){
+                    return activities.findByCourseId(id, new PageRequest(page, 10, Sort.Direction.DESC, "date"));
+                } else{
+                    return null;
+                }
+            case "admin":
+                return activities.findByCourseId(id, new PageRequest(page, 10, Sort.Direction.DESC, "date"));
+        }
+        return activities.findByCourseId(id, new PageRequest(page, 10, Sort.Direction.DESC, "date"));
+    }
+
+    @Override
+    public Page<ActivityJoin> findByCourseJoinByPage(long id, int page) {
+        //Return activities of student or all for lecturer/admin
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()) {
+            case "student":
+                Student student = students.findOne(authenticatedUser.getId());
+                Course course1 = courses.findOne(id);
+                if (student.getCourses().contains(course1)){
+                    return activitiesJoin.findByActivityCourseId(id, new PageRequest(page, 10, Sort.Direction.DESC, "activity.date"));
+                } else{
+                    return null;
+                }
+            case "lecturer":
+                Lecturer lecturer = lecturers.findOne(authenticatedUser.getId());
+                Course course2 = courses.findOne(id);
+                if (lecturer.getCourses().contains(course2)){
+                    return activitiesJoin.findByActivityCourseId(id, new PageRequest(page, 10, Sort.Direction.DESC, "activity.date"));
+                } else{
+                    return null;
+                }
+            case "admin":
+                return activitiesJoin.findByActivityCourseId(id, new PageRequest(page, 10, Sort.Direction.DESC, "activity.date"));
+        }
+        return activitiesJoin.findByActivityCourseId(id, new PageRequest(page, 10, Sort.Direction.DESC, "activity.date"));
+    }
+
+    @Override
     public Page<ActivityJoin> findAllJoinByPage(int page) {
         User authenticatedUser = authDetailsService.getAuthenticatedUser();
         Type listType = new TypeToken<Page<ActivityJoin>>() {}.getType();
         switch (authenticatedUser.getType()) {
             case "student":
-                return activitiesJoin.findByIdUserIdId(authenticatedUser.getId(), new PageRequest(page, 10));
+                return activitiesJoin.findByIdUserIdId(authenticatedUser.getId(), new PageRequest(page, 10, Sort.Direction.DESC, "activity.date"));
             case "lecturer":
                 Lecturer lecturer = lecturers.findOne(authenticatedUser.getId());
-                return activitiesJoin.findByActivityCourseLecturers(lecturer, new PageRequest(page, 10));
+                return activitiesJoin.findByActivityCourseLecturers(lecturer, new PageRequest(page, 10, Sort.Direction.DESC, "activity.date"));
             case "admin":
-                return activitiesJoin.findAll(new PageRequest(page, 10));
+                return activitiesJoin.findAll(new PageRequest(page, 10, Sort.Direction.DESC, "activity.date"));
         }
-        return activitiesJoin.findAll(new PageRequest(page, 10));
+        return activitiesJoin.findAll(new PageRequest(page, 10, Sort.Direction.DESC, "activity.date"));
+    }
+
+    public Page<ActivityJoin> searchJoinByPage(String query, int page){
+        return activitiesJoin.findDistinctByActivityNameOrActivityCourseTitleOrUserFirstNameOrUserLastNameOrActivityTypeNameAllIgnoreCaseContaining(query, query, query, query, query, new PageRequest(page, 10, Sort.Direction.DESC, "activity.date"));
     }
 
     @Override
@@ -91,7 +189,21 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Activity add(Activity entity) {
-        return activities.save(entity);
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()) {
+            case "student":
+                return null;
+            case "lecturer":
+                Lecturer lecturer = lecturers.findOne(authenticatedUser.getId());
+                Course course = courses.findOne(entity.getCourse().getId());
+                if (lecturer.getCourses().contains(course)){
+                    return activities.save(entity);
+                }
+                return null;
+            case "admin":
+                return activities.save(entity);
+        }
+        return null;
     }
 
     @Override

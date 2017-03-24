@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
@@ -39,6 +40,24 @@ public class StorageServiceImpl implements StorageService {
         } catch (IOException e) {
             throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
         }
+    }
+
+    @Override
+    public Path storeAt(MultipartFile file, String location) {
+        Path p;
+        try {
+            if (file.isEmpty()) {
+                throw new StorageException("Failed to store empty file " + file.getOriginalFilename());
+            }
+            //TODO solve access denied when creating folders in path
+            p = this.rootLocation.resolve(location);
+            Files.createDirectories(p.getParent());
+            Files.copy(file.getInputStream(), p);
+        } catch (IOException e) {
+//            return null;
+            throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
+        }
+        return p;
     }
 
     @Override

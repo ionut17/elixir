@@ -12,8 +12,16 @@ import java.util.List;
 
 public interface ActivityJoinRepository extends BaseRepository<ActivityJoin, Long>, PagingAndSortingRepository<ActivityJoin, Long> {
 
+    Page<ActivityJoin> findByActivityId(Long id, Pageable pageable);
+
     Page<ActivityJoin> findByIdUserIdId(Long id, Pageable pageable);
 
+    Page<ActivityJoin> findByIdActivityIdAndIdUserIdId(Long activityId, Long studentId, Pageable pageable);
+
+    Page<ActivityJoin> findByActivityCourseId(Long id, Pageable pageable);
+
     Page<ActivityJoin> findByActivityCourseLecturers (Lecturer lecturer, Pageable pageable);
+
+    Page<ActivityJoin> findDistinctByActivityNameOrActivityCourseTitleOrUserFirstNameOrUserLastNameOrActivityTypeNameAllIgnoreCaseContaining(String activityName, String courseTitle, String studentFirstName, String studentLastName, String typeName, Pageable pageable);
 
 }

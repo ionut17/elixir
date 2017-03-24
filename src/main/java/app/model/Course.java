@@ -64,6 +64,8 @@ public class Course implements Item, Serializable {
         return id;
     }
 
+    public void setId(Long id) { this.id = id; }
+
     public String getTitle() {
         return title;
     }
@@ -107,6 +109,8 @@ public class Course implements Item, Serializable {
     public List<Activity> getActivities() {
         return activities;
     }
+
+    public void addActivity(Activity activity) { this.activities.add(activity);}
 
     public void setActivities(List<Activity> activities) {
         this.activities = activities;

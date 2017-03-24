@@ -51,8 +51,8 @@ CREATE TABLE activity_grades (
   CONSTRAINT activity_grades_pkey PRIMARY KEY (student_id, activity_id)
 );
 CREATE TABLE activity_files (
-  student_id    int REFERENCES students (id) ON UPDATE CASCADE ON DELETE CASCADE, activity_id int REFERENCES activities (id) ON UPDATE CASCADE, file_name varchar(100) not null, extension varchar(30), file_id bigserial not null unique,
-  CONSTRAINT activity_files_pkey PRIMARY KEY (student_id, activity_id, file_name)
+  student_id    int REFERENCES students (id) ON UPDATE CASCADE ON DELETE CASCADE not null, activity_id int REFERENCES activities (id) ON UPDATE CASCADE not null, file_name varchar(100) not null, extension varchar(30), file_id bigserial not null unique, upload_date timestamp not null,
+  CONSTRAINT activity_files_pkey PRIMARY KEY (file_id)
 );
 
 /*View*/
@@ -65,11 +65,11 @@ CREATE OR REPLACE VIEW USERS AS SELECT * FROM(
 ) as users;
 
 CREATE OR REPLACE VIEW ACTIVITIES_JOIN AS SELECT * FROM(
-  SELECT T1.id as user_id, 'student' as user_type, T2.id as activity_id, 'attendance' as role FROM students T1, activities T2, activity_attendances T0 WHERE T1.id = T0.student_id AND T0.activity_id = T2.id
+  SELECT T1.id as user_id, 'student' as user_type, T2.id as activity_id, 'attendance' as role, -1 as extra_id FROM students T1, activities T2, activity_attendances T0 WHERE T1.id = T0.student_id AND T0.activity_id = T2.id
   UNION ALL
-  SELECT T1.id as user_id, 'student' as user_type, T2.id as activity_id, 'grade' as role FROM students T1, activities T2, activity_grades T0 WHERE T1.id = T0.student_id AND T0.activity_id = T2.id
+  SELECT T1.id as user_id, 'student' as user_type, T2.id as activity_id, 'grade' as role, -1 as extra_id FROM students T1, activities T2, activity_grades T0 WHERE T1.id = T0.student_id AND T0.activity_id = T2.id
   UNION ALL
-  SELECT T1.id as user_id, 'student' as user_type, T2.id as activity_id, 'file' as role FROM students T1, activities T2, activity_files T0 WHERE T1.id = T0.student_id AND T0.activity_id = T2.id
+  SELECT T1.id as user_id, 'student' as user_type, T2.id as activity_id, 'file' as role, T0.file_id as extra_id FROM students T1, activities T2, activity_files T0 WHERE T1.id = T0.student_id AND T0.activity_id = T2.id
 ) as activities_join;
 
 /*Inserts*/
@@ -199,7 +199,7 @@ insert into activity_grades(student_id, activity_id, value) VALUES (1,3,9);
 insert into activity_grades(student_id, activity_id, value) VALUES (1,4,7);
 insert into activity_grades(student_id, activity_id, value) VALUES (2,3,10);
 insert into activity_grades(student_id, activity_id, value) VALUES (2,4,10);
-insert into activity_files(student_id, activity_id, file_name, extension) VALUES (1,2,'test','txt');
+insert into activity_files(student_id, activity_id, file_name, extension, upload_date) VALUES (1,2,'test','txt',TIMESTAMP '2017-01-26 14:00:00');
 
 
 /*Sample Selects*/

@@ -17,4 +17,6 @@ public interface GroupRepository extends BaseRepository<Group, Long>, PagingAndS
 
     Page<Group> findByStudents(Student student, Pageable pageable);
 
+    Page<Group> findDistinctByNameAllIgnoreCaseContaining(String name, Pageable pageable);
+
 }

@@ -187,14 +187,14 @@ public class StudentServiceImpl implements StudentService {
             case "student":
                 //Give access only to student's own page
                 if (authenticatedUser.getId().equals(student.getId())){
-                    return activityFileRepository.findByIdStudentId(student.getId(), new PageRequest(page, 10));
+                    return activityFileRepository.findByStudentId(student.getId(), new PageRequest(page, 10));
                 }
                 return null;
             case "lecturer":
             case "admin":
-            return activityFileRepository.findByIdStudentId(student.getId(), new PageRequest(page, 10));
+            return activityFileRepository.findByStudentId(student.getId(), new PageRequest(page, 10));
         }
-        return activityFileRepository.findByIdStudentId(student.getId(), new PageRequest(page, 10));
+        return activityFileRepository.findByStudentId(student.getId(), new PageRequest(page, 10));
     }
 
     @Override

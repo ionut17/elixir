@@ -26,22 +26,18 @@ public class GroupController extends BaseController {
     //-------------------Retrieve All Groups--------------------------------------------------------
 
     @RequestMapping(value = "/groups", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity listAllGroups() {
+    public @ResponseBody ResponseEntity listAllGroups(@RequestParam(value="page", required = false) Integer page, @RequestParam(value="search", required = false) String query) {
+        int targetPage = page!=null ? page.intValue() : 0;
         Map<String, Object> toReturn = new HashMap<>();
-        Page<Group> groups = groupService.findAllByPage(0);
-        if (groups.getSize() == 0) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        Page<Group> groups;
+        if (query!=null){
+            groups = groupService.searchByPage(query, targetPage);
+        } else{
+            groups = groupService.findAllByPage(targetPage);
         }
-        Pager pager = new Pager(groups);
-        toReturn.put("content", groups.getContent());
-        toReturn.put("pager", pager);
-        return new ResponseEntity(toReturn, HttpStatus.OK);
-    }
-
-    @RequestMapping(value = "/groups", params={"page"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody ResponseEntity listAllGroups(@RequestParam("page") int page) {
-        Map<String, Object> toReturn = new HashMap<>();
-        Page<Group> groups = groupService.findAllByPage(0);
+        if (groups==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
         if (groups.getSize() == 0) {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }

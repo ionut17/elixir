@@ -71,6 +71,15 @@ public final class ActivityJoin implements Item, Serializable {
     public void setRole(String role) {
         this.id.setRole(role);
     }
+
+    public Long getExtraId() {
+        return this.id.getExtraId();
+    }
+
+    public void setExtraId(Long extraId) {
+        this.id.setExtraId(extraId);
+    }
+
 }
 
 @Embeddable
@@ -81,6 +90,9 @@ class ActivityJoinId implements Serializable {
 
     @Column(name = "role", nullable = false, length = 100)
     private String role;
+
+    @Column(name = "extra_id", unique=true)
+    private Long extraId;
 
     //Constructors
 
@@ -98,6 +110,14 @@ class ActivityJoinId implements Serializable {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public Long getExtraId() {
+        return extraId;
+    }
+
+    public void setExtraId(Long extraId) {
+        this.extraId = extraId;
     }
 
 }
