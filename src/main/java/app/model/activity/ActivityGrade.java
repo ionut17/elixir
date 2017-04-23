@@ -34,7 +34,7 @@ public class ActivityGrade implements Item, Serializable {
     private Activity activity;
 
     @Column(name = "value", nullable = false, length = 3)
-    private int value;
+    private double value;
 
     public ActivityGrade() {
     }
@@ -63,11 +63,11 @@ public class ActivityGrade implements Item, Serializable {
         this.activity = activity;
     }
 
-    public int getValue() {
+    public double getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(double value) {
         this.value = value;
     }
 }

@@ -2,8 +2,10 @@ package app.repository;
 
 import app.model.Course;
 import app.model.user.Student;
+import org.hibernate.boot.model.source.spi.Sortable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.Repository;
 
@@ -21,6 +23,8 @@ public interface StudentRepository extends BaseRepository<Student, Long>, Paging
     Page<Student> findDistinctByFirstNameOrLastNameOrEmailAllIgnoreCaseContaining(String firstName, String lastName, String email, Pageable pageable);
 
     Student findByEmail(String email);
+
+    List<Student> findByCoursesId(Long id, Sort sortable);
 
     Page<Student> findByCoursesId(Long id, Pageable pageable);
 

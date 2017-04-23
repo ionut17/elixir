@@ -19,9 +19,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "COURSES")
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id")
 public class Course implements Item, Serializable {
 
     @Id
@@ -47,7 +47,7 @@ public class Course implements Item, Serializable {
     @JsonSerialize(using = CustomStudentListSerializer.class)
     private List<Student> students;
 
-    @OneToMany(mappedBy = "course", fetch = FetchType.EAGER, targetEntity = Activity.class, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "course", fetch = FetchType.EAGER, targetEntity = Activity.class, orphanRemoval = true) //cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}
     @Fetch(value = FetchMode.SUBSELECT)
 //    @JsonSerialize(using = CustomActivityListSerializer.class)
     private List<Activity> activities;

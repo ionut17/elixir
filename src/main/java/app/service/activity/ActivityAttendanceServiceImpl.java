@@ -12,6 +12,7 @@ import app.repository.activity.ActivityAttendanceRepository;
 import app.repository.activity.ActivityRepository;
 import app.service.AuthDetailsService;
 import app.service.JwtService;
+import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +40,8 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
     private StudentRepository studentRepository;
     @Autowired
     private LecturerRepository lecturers;
+    @Autowired
+    private ModelMapper modelMapper;
 
     public ActivityAttendanceServiceImpl() {
 
@@ -86,6 +90,24 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
     @Override
     public ActivityAttendance add(ActivityAttendance entity) {
         return activityAttendances.save(entity);
+    }
+
+    @Override
+    public List<ActivityAttendance> addMultipleAttendances(List<Long> studentIds, Long activityId) {
+        List<ActivityAttendance> saved = new ArrayList<>();
+        Activity currentActivity = activityRepository.findOne(activityId);
+        if (currentActivity == null){
+            return null;
+        }
+        for (Long studentId : studentIds){
+            Student currentStudent = studentRepository.findOne(studentId);
+            ActivityAttendance currentAttendance = new ActivityAttendance();
+            currentAttendance.setId(new ActivityAttendanceId(currentActivity.getId(), currentStudent.getId()));
+            currentAttendance.setActivity(currentActivity);
+            currentAttendance.setStudent(modelMapper.map(currentStudent, Student.class));
+            saved.add(activityAttendances.save(currentAttendance));
+        }
+        return saved;
     }
 
     @Override

@@ -47,7 +47,7 @@ CREATE TABLE activity_attendances (
   CONSTRAINT activity_attendances_pkey PRIMARY KEY (student_id, activity_id)
 );
 CREATE TABLE activity_grades (
-  student_id    int REFERENCES students (id) ON UPDATE CASCADE ON DELETE CASCADE, activity_id int REFERENCES activities (id) ON UPDATE CASCADE, value int4 not null,
+  student_id    int REFERENCES students (id) ON UPDATE CASCADE ON DELETE CASCADE, activity_id int REFERENCES activities (id) ON UPDATE CASCADE, value numeric not null,
   CONSTRAINT activity_grades_pkey PRIMARY KEY (student_id, activity_id)
 );
 CREATE TABLE activity_files (
@@ -138,14 +138,24 @@ insert into course_attendants (student_id, course_id) values (2,4);
 insert into course_attendants (student_id, course_id) values (2,5);
 insert into course_attendants (student_id, course_id) values (2,6);
 insert into course_attendants (student_id, course_id) values (3,1);
+insert into course_attendants (student_id, course_id) values (3,2);
+insert into course_attendants (student_id, course_id) values (3,3);
 insert into course_attendants (student_id, course_id) values (3,4);
 insert into course_attendants (student_id, course_id) values (4,1);
 insert into course_attendants (student_id, course_id) values (4,4);
 insert into course_attendants (student_id, course_id) values (4,5);
+insert into course_attendants (student_id, course_id) values (4,6);
 insert into course_attendants (student_id, course_id) values (5,1);
+insert into course_attendants (student_id, course_id) values (5,2);
 insert into course_attendants (student_id, course_id) values (5,3);
 insert into course_attendants (student_id, course_id) values (5,5);
+insert into course_attendants (student_id, course_id) values (6,1);
+insert into course_attendants (student_id, course_id) values (6,2);
 insert into course_attendants (student_id, course_id) values (6,3);
+insert into course_attendants (student_id, course_id) values (6,4);
+insert into course_attendants (student_id, course_id) values (6,5);
+insert into course_attendants (student_id, course_id) values (7,1);
+insert into course_attendants (student_id, course_id) values (7,2);
 insert into course_attendants (student_id, course_id) values (7,3);
 insert into course_attendants (student_id, course_id) values (7,4);
 insert into course_attendants (student_id, course_id) values (7,5);

@@ -49,6 +49,18 @@ public class LecturerController extends BaseController {
         return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/lecturers/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity listAllLecturersUnpaged() {
+        List<LecturerDto> lecturers = lecturerService.findAll();
+        if (lecturers==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (lecturers.size() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity(lecturers, HttpStatus.OK);
+    }
+
     //-------------------Retrieve Single Lecturer--------------------------------------------------------
 
     @RequestMapping(value = "/lecturers/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

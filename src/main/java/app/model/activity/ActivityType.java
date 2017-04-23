@@ -22,7 +22,7 @@ public class ActivityType implements Item, Serializable {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "type", fetch = FetchType.EAGER, targetEntity = Activity.class, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "type", fetch = FetchType.EAGER, targetEntity = Activity.class, orphanRemoval = true)
     private List<Activity> activities;
 
     public ActivityType(String name) {

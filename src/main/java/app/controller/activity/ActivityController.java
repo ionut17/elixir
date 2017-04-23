@@ -4,13 +4,14 @@ import app.controller.common.BaseController;
 import app.model.Course;
 import app.model.Pager;
 import app.model.activity.*;
-import app.model.dto.ActivityPostDto;
-import app.model.dto.CourseDto;
+import app.model.dto.*;
+import app.model.user.Student;
 import app.service.CourseService;
 import app.service.activity.ActivityAttendanceService;
 import app.service.activity.ActivityFileService;
 import app.service.activity.ActivityGradeService;
 import app.service.activity.ActivityService;
+import app.service.user.StudentService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,10 +23,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class ActivityController extends BaseController {
@@ -42,6 +40,8 @@ public class ActivityController extends BaseController {
     //Other dependencies
     @Autowired
     CourseService courses;
+    @Autowired
+    StudentService students;
     @Autowired
     private ModelMapper modelMapper;
 
@@ -146,6 +146,18 @@ public class ActivityController extends BaseController {
         return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/activities/join/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity listAllActivitiesJoinUnpaged() {
+        List<ActivityJoin> activities = activityService.findAllJoin();
+        if (activities==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (activities.size() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity(activities, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/activities/join/{activity_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseEntity listAllActivitiesJoin(@PathVariable("activity_id") Long activityId, @RequestParam(value="page", required = false) Integer page, @RequestParam(value="search", required = false) String query) {
         int targetPage = page!=null ? page.intValue() : 0;
@@ -247,6 +259,19 @@ public class ActivityController extends BaseController {
         return new ResponseEntity<>(attendance, HttpStatus.OK);
     }
 
+    //Add multiple attendances
+    @RequestMapping(value = "/attendances", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity addAttendances(@RequestBody ActivityAttendancePostDto multipleAttendancesDto, UriComponentsBuilder ucBuilder) {
+        if (multipleAttendancesDto.getStudentIds().size() == 0 || multipleAttendancesDto.getActivityId() < 0){
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        List<ActivityAttendance> attendancesToAdd = activityAttendanceService.addMultipleAttendances(multipleAttendancesDto.getStudentIds(), multipleAttendancesDto.getActivityId());
+        if (attendancesToAdd == null){
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity(attendancesToAdd, HttpStatus.CREATED);
+    }
+
     //-------------------Retrieve All Grades--------------------------------------------------------
 
     @RequestMapping(value = "/grades", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -307,6 +332,19 @@ public class ActivityController extends BaseController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(attendance, HttpStatus.OK);
+    }
+
+    //Add multiple attendances
+    @RequestMapping(value = "/grades", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity addGrades(@RequestBody ActivityGradePostDto multipleGradesDto) {
+        if (multipleGradesDto.getStudentsGrades().size() == 0 || multipleGradesDto.getActivityId() < 0){
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        List<ActivityGrade> gradesToAdd = activityGradeService.addMultipleGrades(multipleGradesDto.getStudentsGrades(), multipleGradesDto.getActivityId());
+        if (gradesToAdd == null){
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity(gradesToAdd, HttpStatus.CREATED);
     }
 
     //-------------------Retrieve All Files--------------------------------------------------------
@@ -371,6 +409,40 @@ public class ActivityController extends BaseController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(file, HttpStatus.OK);
+    }
+
+    //-------------------Delete a Activity--------------------------------------------------------
+
+    @RequestMapping(value = "/activities/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteActivity(@PathVariable("id") long id) {
+        Activity activity = activityService.findById(id);
+        if (activity == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        activityService.remove(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @RequestMapping(value = "/attendances/{activity_id}/{student_id}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteAttendance(@PathVariable("activity_id") long activityId, @PathVariable("student_id") long studentId) {
+        ActivityAttendanceId attendanceId = new ActivityAttendanceId(activityId, studentId);
+        ActivityAttendance attendance = activityAttendanceService.findById(attendanceId);
+        if (attendance == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        activityAttendanceService.remove(attendanceId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @RequestMapping(value = "/grades/{activity_id}/{student_id}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteGradee(@PathVariable("activity_id") long activityId, @PathVariable("student_id") long studentId) {
+        ActivityGradeId gradeId = new ActivityGradeId(activityId, studentId);
+        ActivityGrade grade = activityGradeService.findById(gradeId);
+        if (grade == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        activityGradeService.remove(gradeId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

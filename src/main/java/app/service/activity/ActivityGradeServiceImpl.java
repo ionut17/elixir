@@ -4,9 +4,12 @@ import app.model.activity.Activity;
 import app.model.activity.ActivityAttendance;
 import app.model.activity.ActivityGrade;
 import app.model.activity.ActivityGradeId;
+import app.model.dto.StudentGradeDto;
 import app.model.user.Lecturer;
+import app.model.user.Student;
 import app.model.user.User;
 import app.repository.LecturerRepository;
+import app.repository.StudentRepository;
 import app.repository.activity.ActivityAttendanceRepository;
 import app.repository.activity.ActivityGradeRepository;
 import app.repository.activity.ActivityRepository;
@@ -24,6 +27,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component("activityGradeService")
@@ -37,6 +41,8 @@ public class ActivityGradeServiceImpl implements ActivityGradeService {
     ActivityRepository activityRepository;
     @Autowired
     private LecturerRepository lecturers;
+    @Autowired
+    private StudentRepository studentRepository;
 
     public ActivityGradeServiceImpl() {
 
@@ -117,6 +123,25 @@ public class ActivityGradeServiceImpl implements ActivityGradeService {
                 return activityGrades.findByIdActivityId(id, new PageRequest(page, 10));
         }
         return null;
+    }
+
+    @Override
+    public List<ActivityGrade> addMultipleGrades(List<StudentGradeDto> studentsGrades, Long activityId) {
+        List<ActivityGrade> saved = new ArrayList<>();
+        Activity currentActivity = activityRepository.findOne(activityId);
+        if (currentActivity == null){
+            return null;
+        }
+        for (StudentGradeDto entry : studentsGrades){
+            Student currentStudent = studentRepository.findOne(entry.getStudentId());
+            ActivityGrade currentGrade = new ActivityGrade();
+            currentGrade.setId(new ActivityGradeId(currentActivity.getId(), currentStudent.getId()));
+            currentGrade.setActivity(currentActivity);
+            currentGrade.setStudent(currentStudent);
+            currentGrade.setValue(entry.getGrade());
+            saved.add(activityGrades.save(currentGrade));
+        }
+        return saved;
     }
 
 }

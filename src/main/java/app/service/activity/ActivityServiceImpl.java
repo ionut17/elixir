@@ -65,7 +65,19 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Page<Activity> findAllByPage(int page) {
-        return activities.findAll(new PageRequest(page, 10, Sort.Direction.DESC, "date"));
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()) {
+            case "student":
+                Student student = students.findOne(authenticatedUser.getId());
+                List<Course> courses = student.getCourses();
+                return activities.findByCourseIn(courses, new PageRequest(page, 10, Sort.Direction.DESC, "date"));
+            case "lecturer":
+                Lecturer lecturer = lecturers.findOne(authenticatedUser.getId());
+                return activities.findByCourseIn(lecturer.getCourses(), new PageRequest(page, 10, Sort.Direction.DESC, "date"));
+            case "admin":
+                return activities.findAll(new PageRequest(page, 10, Sort.Direction.DESC, "date"));
+        }
+        return null;
     }
 
     @Override
@@ -213,6 +225,7 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public void remove(Long id) {
+
         activities.delete(id);
     }
 

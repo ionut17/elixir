@@ -1,6 +1,7 @@
 package app.controller.user;
 
 import app.controller.common.BaseController;
+import app.model.Course;
 import app.model.Group;
 import app.model.Pager;
 import app.model.activity.ActivityAttendance;
@@ -9,6 +10,7 @@ import app.model.activity.ActivityGrade;
 import app.model.dto.CourseDto;
 import app.model.dto.StudentDto;
 import app.model.dto.UserDto;
+import app.service.CourseService;
 import app.service.GroupService;
 import app.service.user.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,8 @@ public class StudentController extends BaseController {
     StudentService studentService;
     @Autowired
     GroupService groupService;
+    @Autowired
+    CourseService courseService;
 
     //-------------------Retrieve All Students--------------------------------------------------------
 
@@ -57,6 +61,19 @@ public class StudentController extends BaseController {
         return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/students/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity listAllStudentsUnpaged() {
+        List<StudentDto> students = studentService.findAll();
+        if (students==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (students.size() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity(students, HttpStatus.OK);
+    }
+
     //-------------------Retrieve Single Student--------------------------------------------------------
 
     @RequestMapping(value = "/students/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -75,6 +92,19 @@ public class StudentController extends BaseController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(student, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/students/course/{course_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getStudentsByCourse(@PathVariable("course_id") Long course_id) {
+        CourseDto course = courseService.findById(course_id);
+        if (course == null){
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        List<StudentDto> students = studentService.findByCourseId(course_id);
+        if (students == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity(students, HttpStatus.OK);
     }
 
     //-------------------Retrieve Elements of Student--------------------------------------------------------

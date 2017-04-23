@@ -1,5 +1,6 @@
 package app.service.user;
 
+import app.model.Course;
 import app.model.Group;
 import app.model.activity.ActivityAttendance;
 import app.model.activity.ActivityFile;
@@ -17,18 +18,18 @@ import app.repository.activity.ActivityFileRepository;
 import app.repository.activity.ActivityGradeRepository;
 import app.service.AuthDetailsService;
 import app.service.common.BaseService;
+import org.h2.result.SortOrder;
+import org.hibernate.boot.model.source.spi.Sortable;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component("studentService")
@@ -147,6 +148,20 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public List<StudentDto> findByCourseId(Long courseId) {
+        Type listType = new TypeToken<List<StudentDto>>() {}.getType();
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+                return null;
+            case "lecturer":
+            case "admin":
+                return modelMapper.map(students.findByCoursesId(courseId, new Sort(Sort.Direction.ASC, "lastName")), listType);
+        }
+        return null;
+    }
+
+    @Override
     public Page<ActivityAttendance> getAttendances(StudentDto student, int page) {
         User authenticatedUser = authDetailsService.getAuthenticatedUser();
         switch (authenticatedUser.getType()){
@@ -248,6 +263,19 @@ public class StudentServiceImpl implements StudentService {
     @Override
     public StudentDto removeGroupOfStudent(Group group, StudentDto student) {
         return modelMapper.map(students.removeGroupOfStudent(group, modelMapper.map(student, Student.class)), StudentDto.class);
+    }
+
+    @Override
+    public StudentDto addCourseToStudent(Long courseId, Long studentId) {
+        Student currentStudent = students.findOne(studentId);
+        if (currentStudent == null){
+            return null;
+        }
+        Course currentCourse = courseRepository.findOne(courseId);
+        if (currentCourse == null){
+            return null;
+        }
+        return modelMapper.map(students.addCourseToStudent(currentCourse, currentStudent), StudentDto.class);
     }
 
 }

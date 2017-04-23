@@ -97,6 +97,20 @@ public class LecturerServiceImpl implements LecturerService {
     }
 
     @Override
+    public LecturerDto addCourseToLecturer(Long courseId, Long lecturerId) {
+        Course course = courseRepository.findOne(courseId);
+        Lecturer lecturer = lecturers.findOne(lecturerId);
+        return modelMapper.map(lecturers.addCourseToLecturer(course, lecturer), LecturerDto.class);
+    }
+
+    @Override
+    public LecturerDto removeCourseOfLecturer(Long courseId, Long lecturerId) {
+        Course course = courseRepository.findOne(courseId);
+        Lecturer lecturer = lecturers.findOne(lecturerId);
+        return modelMapper.map(lecturers.removeCourseOfLecturer(course, lecturer), LecturerDto.class);
+    }
+
+    @Override
     public Page<LecturerDto> searchByPage(String query, int page) {
         Type listType = new TypeToken<Page<LecturerDto>>() {}.getType();
         return modelMapper.map(lecturers.findDistinctByFirstNameOrLastNameOrEmailAllIgnoreCaseContaining(query, query, query, new PageRequest(page, 10)), listType);

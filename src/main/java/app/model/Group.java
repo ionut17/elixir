@@ -13,9 +13,9 @@ import java.util.List;
 
 @Entity
 @Table(name = "GROUPS")
-@JsonIdentityInfo(
-        generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "id")
+//@JsonIdentityInfo(
+//        generator = ObjectIdGenerators.PropertyGenerator.class,
+//        property = "id")
 public class Group implements Item, Serializable {
 
     @Id

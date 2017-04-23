@@ -1,5 +1,6 @@
 package app.repository.activity;
 
+import app.model.Course;
 import app.model.activity.ActivityJoin;
 import app.model.user.Lecturer;
 import app.repository.BaseRepository;
@@ -21,6 +22,10 @@ public interface ActivityJoinRepository extends BaseRepository<ActivityJoin, Lon
     Page<ActivityJoin> findByActivityCourseId(Long id, Pageable pageable);
 
     Page<ActivityJoin> findByActivityCourseLecturers (Lecturer lecturer, Pageable pageable);
+
+    Page<ActivityJoin> findByActivityCourse(List<Course> courses, Pageable pageable);
+
+//    Page<ActivityJoin> findByActivityCourses(List<Course> courses, Pageable pageable);
 
     Page<ActivityJoin> findDistinctByActivityNameOrActivityCourseTitleOrUserFirstNameOrUserLastNameOrActivityTypeNameAllIgnoreCaseContaining(String activityName, String courseTitle, String studentFirstName, String studentLastName, String typeName, Pageable pageable);
 

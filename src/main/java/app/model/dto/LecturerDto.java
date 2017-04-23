@@ -6,6 +6,7 @@ import app.model.activity.ActivityAttendance;
 import app.model.activity.ActivityGrade;
 import app.model.common.Item;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -13,7 +14,8 @@ public class LecturerDto implements Item {
 
     private Long id;
 
-    @JsonIgnore
+//    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     private String firstName;

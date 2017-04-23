@@ -47,6 +47,18 @@ public class GroupController extends BaseController {
         return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/groups/all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseEntity listAllGroupsUnpaged() {
+        List<Group> groups = groupService.findAll();
+        if (groups==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (groups.size() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity(groups, HttpStatus.OK);
+    }
+
     //-------------------Retrieve Single Group--------------------------------------------------------
 
     @RequestMapping(value = "/groups/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

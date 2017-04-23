@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Created by Ionut on 19-Dec-16.
  */
-public interface LecturerRepository extends BaseRepository<Lecturer, Long>, PagingAndSortingRepository<Lecturer, Long> {
+public interface LecturerRepository extends BaseRepository<Lecturer, Long>, PagingAndSortingRepository<Lecturer, Long>, LecturerRepositoryCustom {
 
     List<Lecturer> findByFirstName(String firstName);
 

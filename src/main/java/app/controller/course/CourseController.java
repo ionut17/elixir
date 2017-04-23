@@ -10,6 +10,8 @@ import app.model.dto.LecturerDto;
 import app.model.dto.StudentDto;
 import app.model.user.User;
 import app.service.CourseService;
+import app.service.user.LecturerService;
+import app.service.user.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +31,10 @@ public class CourseController extends BaseController {
 
     @Autowired
     CourseService courseService;
+    @Autowired
+    LecturerService lecturerService;
+    @Autowired
+    StudentService studentService;
 
     //-------------------Retrieve All Courses--------------------------------------------------------
 
@@ -112,6 +119,32 @@ public class CourseController extends BaseController {
         toReturn.put("content", lecturers.getContent());
         toReturn.put("pager", pager);
         return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    //Add lecturers to course
+    @RequestMapping(value = "/courses/{course_id}/lecturers", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity addLecturersToCourse(@PathVariable("course_id") Long courseId, @RequestBody Map<String, Long> lecturerDetails) {
+        CourseDto course = courseService.findById(courseId);
+        LecturerDto lecturer = lecturerService.findById(lecturerDetails.get("lecturer_id"));
+        if (course==null || lecturer==null){
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        LecturerDto resultLecturer = lecturerService.addCourseToLecturer(course.getId(), lecturer.getId());
+        return new ResponseEntity(resultLecturer, HttpStatus.CREATED);
+    }
+
+    //Add students to course
+    @RequestMapping(value = "/courses/{course_id}/students", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity addStudentsToCourse(@PathVariable("course_id") Long courseId, @RequestBody Map<String, List<Long>> studentDetails) {
+        List<StudentDto> addedStudents = new ArrayList<>();
+        for (Long studentId : studentDetails.get("student_ids")){
+            StudentDto student = studentService.addCourseToStudent(courseId, studentId);
+            if (student==null){
+                return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            }
+            addedStudents.add(student);
+        }
+        return new ResponseEntity(addedStudents, HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/courses/{id}/students", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

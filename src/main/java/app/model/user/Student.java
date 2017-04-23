@@ -43,17 +43,17 @@ public class Student extends AbstractUser {
     @JsonSerialize(using = CustomCourseListSerializer.class)
     private List<Course> courses = new ArrayList<Course>();
 
-    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityAttendance.class, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityAttendance.class, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE})
     @Fetch(value = FetchMode.SUBSELECT)
 //    @JsonSerialize(using = CustomActivityAttendanceListSerializer.class)
     private List<ActivityAttendance> attendances = new ArrayList<ActivityAttendance>();
 
-    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityGrade.class, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityGrade.class, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE})
     @Fetch(value = FetchMode.SUBSELECT)
 //    @JsonSerialize(using = CustomActivityGradeListSerializer.class)
     private List<ActivityGrade> grades = new ArrayList<ActivityGrade>();
 
-    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityFile.class, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityFile.class, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE})
     @Fetch(value = FetchMode.SUBSELECT)
 //    @JsonSerialize(using = CustomActivityFileListSerializer.class)
     private List<ActivityFile> files = new ArrayList<>();
