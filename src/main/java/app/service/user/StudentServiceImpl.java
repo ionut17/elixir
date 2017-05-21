@@ -17,7 +17,11 @@ import app.repository.activity.ActivityAttendanceRepository;
 import app.repository.activity.ActivityFileRepository;
 import app.repository.activity.ActivityGradeRepository;
 import app.service.AuthDetailsService;
+import app.service.ParsingService;
 import app.service.common.BaseService;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.h2.result.SortOrder;
 import org.hibernate.boot.model.source.spi.Sortable;
 import org.modelmapper.ModelMapper;
@@ -27,10 +31,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.w3c.dom.css.CSSValueList;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 @Component("studentService")
 public class StudentServiceImpl implements StudentService {
@@ -54,6 +67,8 @@ public class StudentServiceImpl implements StudentService {
     //Other dependencies
     @Autowired
     AuthDetailsService authDetailsService;
+    @Autowired
+    ParsingService parsingService;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -80,9 +95,9 @@ public class StudentServiceImpl implements StudentService {
                 return null;
             case "lecturer":
             case "admin":
-                return modelMapper.map(students.findAll(new PageRequest(page, 10)), listType);
+                return modelMapper.map(students.findAll(new PageRequest(page, 10, Sort.Direction.ASC, "lastName")), listType);
         }
-        return modelMapper.map(students.findAll(new PageRequest(page, 10)), listType);
+        return null;
     }
 
 
@@ -98,7 +113,11 @@ public class StudentServiceImpl implements StudentService {
                 return null;
             case "lecturer":
             case "admin":
-                return modelMapper.map(students.findOne(id), StudentDto.class);
+                Student stud = students.findOne(id);
+                if (stud == null)
+                    return null;
+                else
+                    return modelMapper.map(stud, StudentDto.class);
         }
         return modelMapper.map(students.findOne(id), StudentDto.class);
     }
@@ -142,7 +161,11 @@ public class StudentServiceImpl implements StudentService {
                 return null;
             case "lecturer":
             case "admin":
-                return modelMapper.map(students.findByEmail(email), StudentDto.class);
+                Student stud = students.findByEmail(email);
+                if (stud != null){
+                    return modelMapper.map(stud, StudentDto.class);
+                }
+                else return null;
         }
         return modelMapper.map(students.findByEmail(email), StudentDto.class);
     }
@@ -256,13 +279,41 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public StudentDto addGroupToStudent(Group group, StudentDto student) {
-        return modelMapper.map(students.addGroupToStudent(group, modelMapper.map(student, Student.class)), StudentDto.class);
+    public StudentDto addGroupToStudent(Group group, StudentDto studentDto) {
+        Student student = students.findOne(studentDto.getId());
+        return modelMapper.map(students.addGroupToStudent(group, student), StudentDto.class);
     }
 
     @Override
     public StudentDto removeGroupOfStudent(Group group, StudentDto student) {
         return modelMapper.map(students.removeGroupOfStudent(group, modelMapper.map(student, Student.class)), StudentDto.class);
+    }
+
+    @Override
+    public List<StudentDto> importEntities(File file) throws IOException {
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+                return null;
+            case "lecturer":
+            case "admin":
+                CSVParser parser = CSVParser.parse(file, StandardCharsets.UTF_8, CSVFormat.EXCEL.withIgnoreSurroundingSpaces().withHeader());
+                String email;
+                for (CSVRecord csvRecord : parser) {
+                    email = csvRecord.get("EMAIL").trim();
+                    if (this.findByEmail(email) == null){
+                        StudentDto newStudent = new StudentDto();
+                        Map<String, String> nameMap = parsingService.parseFirstLastName(csvRecord.get("NAME").trim());
+                        newStudent.setFirstName(nameMap.get("firstName"));
+                        newStudent.setLastName(nameMap.get("lastName"));
+                        newStudent.setEmail(email);
+                        newStudent.setPassword("qwe123");
+                        this.add(newStudent);
+                    }
+                }
+                return null;
+        }
+        return null;
     }
 
     @Override

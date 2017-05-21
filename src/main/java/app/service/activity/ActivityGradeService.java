@@ -14,6 +14,8 @@ public interface ActivityGradeService extends BaseService<ActivityGrade, Activit
 
     Page<ActivityGrade> findByActivityIdByPage(long activityId, int page);
 
+    List<ActivityGrade> findByActivityCourseId(long id);
+
     List<ActivityGrade> addMultipleGrades(List<StudentGradeDto> studentsGrades, Long activityId);
 
 }

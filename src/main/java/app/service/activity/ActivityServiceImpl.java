@@ -25,6 +25,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -190,6 +191,11 @@ public class ActivityServiceImpl implements ActivityService {
         return activitiesJoin.findAll(new PageRequest(page, 10, Sort.Direction.DESC, "activity.date"));
     }
 
+    @Override
+    public List<Activity> importEntities(File file) {
+        return null;
+    }
+
     public Page<ActivityJoin> searchJoinByPage(String query, int page){
         return activitiesJoin.findDistinctByActivityNameOrActivityCourseTitleOrUserFirstNameOrUserLastNameOrActivityTypeNameAllIgnoreCaseContaining(query, query, query, query, query, new PageRequest(page, 10, Sort.Direction.DESC, "activity.date"));
     }
@@ -225,7 +231,6 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public void remove(Long id) {
-
         activities.delete(id);
     }
 

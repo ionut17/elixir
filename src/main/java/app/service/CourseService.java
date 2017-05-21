@@ -9,6 +9,8 @@ import app.service.common.BaseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public interface CourseService extends BaseService<CourseDto, Long> {
@@ -24,5 +26,9 @@ public interface CourseService extends BaseService<CourseDto, Long> {
     Page<StudentDto> getStudents(CourseDto course, int page);
 
     Page<Activity> getActivities(CourseDto course, int page);
+
+    void importCourseOwnerships(File importedFile) throws IOException;
+
+    void importCourseAttendants(File importedFile) throws IOException;
 
 }

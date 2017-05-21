@@ -15,5 +15,7 @@ public interface ActivityFileService extends BaseService<ActivityFile, Long> {
 
     Page<ActivityFile> findByActivityIdAndStudentIdByPage(long activityId, long studentId, int page);
 
+    List<ActivityFile> findByActivityCourseId(long courseId);
+
 //    ActivityFile findByFileId(long fileId);
 }

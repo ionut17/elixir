@@ -10,12 +10,14 @@ import app.model.dto.ResourceDto;
 import app.model.user.Student;
 import app.model.user.User;
 import app.repository.StudentRepository;
-import app.service.AuthDetailsService;
-import app.service.JwtService;
+import app.service.*;
 import app.service.activity.ActivityFileService;
 import app.service.activity.ActivityService;
 import app.service.storage.StorageService;
 //import org.apache.catalina.servlet4preview.http.HttpServletRequest;
+import app.service.user.LecturerService;
+import app.service.user.StudentService;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tools.ant.taskdefs.condition.Http;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +39,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.sql.Date;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
 //import org.apache.catalina.servlet4preview.http.HttpServletRequest;
@@ -58,6 +60,16 @@ public class StorageController extends BaseController {
     private AuthDetailsService authDetailsService;
     @Autowired
     StudentRepository students;
+    @Autowired
+    StudentService studentService;
+    @Autowired
+    LecturerService lecturerService;
+    @Autowired
+    CourseService courseService;
+    @Autowired
+    GroupService groupService;
+    @Autowired
+    TimeConverter timeConverter;
 
     @RequestMapping(value = "/storage/retrieve/{file_id}", params = {"k"}, method = RequestMethod.GET)
     public @ResponseBody ResponseEntity retrieveFile(@PathVariable("file_id") long fileId, @RequestParam("k") String key, UriComponentsBuilder ucBuilder, HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -74,7 +86,7 @@ public class StorageController extends BaseController {
         ServletContext context = request.getServletContext();
         ActivityFile activityFile = activityFileService.findById(fileId);
         //TODO let lecturer to access student's files who are enrolled in his courses
-        if (!user.getEmail().equals(activityFile.getStudent().getEmail()) && !user.getType().equals("admin")){
+        if (!user.getEmail().equals(activityFile.getStudent().getEmail()) && user.getType().equals("student")){
             return new ResponseEntity<>(new ErrorMessagesWrapper(emp.NOT_AUTHORIZED), HttpStatus.BAD_REQUEST);
         }
 
@@ -126,7 +138,8 @@ public class StorageController extends BaseController {
         activityFile.setStudent(student);
         activityFile.setFileName(fileName);
         activityFile.setExtension(FilenameUtils.getExtension(uploadedFile.getOriginalFilename()));
-        activityFile.setUploadDate(new Date(Calendar.getInstance(Locale.getDefault()).getTime().getTime()));
+        activityFile.setUploadDate(new Date());
+        activityFile.setUploadDate(timeConverter.addMinutes(new Date(), 180)); //convert to GMT+3 time
         ResourceDto uploadedResource = new ResourceDto(activityFile);
         if (!uploadedResource.isValid()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -143,6 +156,46 @@ public class StorageController extends BaseController {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(ucBuilder.path("/files/file/{file_id}").buildAndExpand(storedActivity.getId()).toUri());
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
+    }
+
+    //Import
+    @RequestMapping(value = "/import/{type}", headers=("content-type=multipart/*"), method = RequestMethod.POST)
+    public ResponseEntity<Resource> importData(@RequestParam(value = "file") MultipartFile uploadedFile, @PathVariable("type") String importType, UriComponentsBuilder ucBuilder) {
+        if (uploadedFile.isEmpty()){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        try {
+            File importedFile = new File(storageService.getTempDir(), uploadedFile.getOriginalFilename());
+            FileUtils.writeByteArrayToFile(importedFile, uploadedFile.getBytes());
+
+            //Call the service
+            switch(importType){
+                case "students":
+                    studentService.importEntities(importedFile);
+                    break;
+                case "lecturers":
+                    lecturerService.importEntities(importedFile);
+                    break;
+                case "courses":
+                    courseService.importEntities(importedFile);
+                    break;
+                case "groups":
+                    groupService.importEntities(importedFile);
+                    break;
+                case "courses_ownerships":
+                    courseService.importCourseOwnerships(importedFile);
+                case "courses_attendants":
+                    courseService.importCourseAttendants(importedFile);
+                case "groups_students":
+                    groupService.importGroupStudents(importedFile);
+                default:
+                    break;
+            }
+
+            return new ResponseEntity<>(HttpStatus.CREATED);
+        } catch (Exception ex){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     @ExceptionHandler(StorageFileNotFoundException.class)

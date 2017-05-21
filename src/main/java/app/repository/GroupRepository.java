@@ -13,6 +13,8 @@ public interface GroupRepository extends BaseRepository<Group, Long>, PagingAndS
 
     Group findByName(String name);
 
+    Group findByNameAndYear(String name, int year);
+
     List<Group> findByYear(int year);
 
     Page<Group> findByStudents(Student student, Pageable pageable);

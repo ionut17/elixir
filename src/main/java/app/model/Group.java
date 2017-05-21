@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Entity
-@Table(name = "GROUPS")
+@Table(name = "GROUPS", uniqueConstraints = @UniqueConstraint(columnNames = {"name", "year"}))
 //@JsonIdentityInfo(
 //        generator = ObjectIdGenerators.PropertyGenerator.class,
 //        property = "id")
@@ -22,13 +22,13 @@ public class Group implements Item, Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "year", nullable = false, length = 1)
     private int year;
 
-    @ManyToMany(mappedBy = "groups", fetch = FetchType.EAGER, targetEntity = Student.class, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "groups", fetch = FetchType.EAGER, targetEntity = Student.class, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @JsonSerialize(using = CustomStudentListSerializer.class)
     private List<Student> students;
 
@@ -37,7 +37,7 @@ public class Group implements Item, Serializable {
         this.setYear(yearOfStudy);
     }
 
-    protected Group() {
+    public Group() {
     }
 
     public Long getId() {

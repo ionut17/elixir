@@ -17,7 +17,10 @@ public class Lecturer extends AbstractUser {
 
     //Fields
 
-    @ManyToMany(fetch = FetchType.EAGER, targetEntity = Course.class, cascade = CascadeType.ALL)
+    @Column(name = "website", length = 150)
+    private String website;
+
+    @ManyToMany(fetch = FetchType.EAGER, targetEntity = Course.class, cascade = { CascadeType.MERGE, CascadeType.REFRESH })
     @Fetch(FetchMode.SELECT)
     @JoinTable(name = "COURSE_OWNERSHIPS",
             joinColumns = {@JoinColumn(name = "lecturer_id")},
@@ -44,5 +47,13 @@ public class Lecturer extends AbstractUser {
 
     public boolean hasCourse(Course course) {
         return courses.contains(course);
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
     }
 }

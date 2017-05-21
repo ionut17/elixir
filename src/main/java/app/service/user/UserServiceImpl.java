@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -72,9 +73,9 @@ public class UserServiceImpl implements UserService {
             case "lecturer":
                 return null;
             case "admin":
-                return modelMapper.map(users.findAll(new PageRequest(page, 10)), listType);
+                return modelMapper.map(users.findAll(new PageRequest(page, 10, Sort.Direction.ASC, "lastName")), listType);
         }
-        return modelMapper.map(users.findAll(new PageRequest(page, 10)), listType);
+        return null;
     }
 
     @Override

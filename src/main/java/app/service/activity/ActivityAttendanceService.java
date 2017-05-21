@@ -13,5 +13,7 @@ public interface ActivityAttendanceService extends BaseService<ActivityAttendanc
 
     Page<ActivityAttendance> findByStudentIdByPage(long id, int page);
 
+    List<ActivityAttendance> findByActivityCourseId(long id);
+
     List<ActivityAttendance> addMultipleAttendances(List<Long> studentIds, Long activityId);
 }

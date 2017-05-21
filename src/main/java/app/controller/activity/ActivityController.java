@@ -7,6 +7,7 @@ import app.model.activity.*;
 import app.model.dto.*;
 import app.model.user.Student;
 import app.service.CourseService;
+import app.service.TimeConverter;
 import app.service.activity.ActivityAttendanceService;
 import app.service.activity.ActivityFileService;
 import app.service.activity.ActivityGradeService;
@@ -44,6 +45,8 @@ public class ActivityController extends BaseController {
     StudentService students;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private TimeConverter timeConverter;
 
     //-------------------Retrieve All Activities--------------------------------------------------------
 
@@ -111,7 +114,7 @@ public class ActivityController extends BaseController {
         activity.setCourse(course);
         activity.setType(activityType);
         activity.setName(activityPostDto.getName());
-        activity.setDate(new Date(activityPostDto.getDate()));
+        activity.setDate(timeConverter.addMinutes(new Date(activityPostDto.getDate()), 180)); //convert to GMT+3 time
         activity = activityService.add(activity);
         if (activity==null){
             return new ResponseEntity(HttpStatus.BAD_REQUEST);
@@ -218,6 +221,19 @@ public class ActivityController extends BaseController {
         return new ResponseEntity(toReturn, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/attendances/course/{course_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getAttendancesOfCourse(@PathVariable("course_id") long courseId) {
+        Map<String, Object> toReturn = new HashMap<>();
+        List<ActivityAttendance> attendances = activityAttendanceService.findByActivityCourseId(courseId);
+        if (attendances==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (attendances.size() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity(attendances, HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/attendances/{activity_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity getAttendancesOfActivity(@PathVariable("activity_id") long activityId) {
         Map<String, Object> toReturn = new HashMap<>();
@@ -291,6 +307,18 @@ public class ActivityController extends BaseController {
         toReturn.put("content", grades.getContent());
         toReturn.put("pager", pager);
         return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/grades/course/{course_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getGradesOfCourse(@PathVariable("course_id") long courseId) {
+        List<ActivityGrade> grades = activityGradeService.findByActivityCourseId(courseId);
+        if (grades==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (grades.size() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity(grades, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/grades/{activity_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -383,6 +411,18 @@ public class ActivityController extends BaseController {
         toReturn.put("content", files.getContent());
         toReturn.put("pager", pager);
         return new ResponseEntity(toReturn, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/files/course/{course_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity getFilesOfCourse(@PathVariable("course_id") long courseId) {
+        List<ActivityFile> files = activityFileService.findByActivityCourseId(courseId);
+        if (files==null){
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+        if (files.size() == 0) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity(files, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/files/{activity_id}/{student_id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

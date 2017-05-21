@@ -15,6 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "ACTIVITIES")
@@ -44,6 +45,18 @@ public class Activity implements Item, Serializable {
     @JoinColumn(name = "course_id", nullable = false)
     @JsonSerialize(using = CustomCourseSerializer.class)
     private Course course;
+
+    @OneToMany(mappedBy = "activity", fetch = FetchType.EAGER, targetEntity = ActivityAttendance.class, orphanRemoval = true, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE})
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<ActivityAttendance> attendances;
+
+    @OneToMany(mappedBy = "activity", fetch = FetchType.EAGER, targetEntity = ActivityGrade.class, orphanRemoval = true, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE})
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<ActivityGrade> grades;
+
+    @OneToMany(mappedBy = "activity", fetch = FetchType.EAGER, targetEntity = ActivityFile.class, orphanRemoval = true, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE})
+    @Fetch(value = FetchMode.SUBSELECT)
+    private List<ActivityFile> files;
 
 //    @OneToMany(mappedBy = "activity", fetch = FetchType.EAGER, targetEntity = ActivityAttendance.class, cascade = CascadeType.ALL)
 //    private List<ActivityAttendance> attendances;

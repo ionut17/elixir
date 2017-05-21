@@ -4,19 +4,30 @@ import app.model.Course;
 import app.model.dto.CourseDto;
 import app.model.dto.LecturerDto;
 import app.model.user.Lecturer;
+import app.model.user.User;
 import app.repository.CourseRepository;
 import app.repository.LecturerRepository;
+import app.service.AuthDetailsService;
+import app.service.ParsingService;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 @Component("lecturerService")
 public class LecturerServiceImpl implements LecturerService {
@@ -33,9 +44,13 @@ public class LecturerServiceImpl implements LecturerService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
+    private AuthDetailsService authDetailsService;
+    @Autowired
     private ModelMapper modelMapper;
     @Autowired
     private Logger logger;
+    @Autowired
+    private ParsingService parsingService;
 
     public LecturerServiceImpl() {
     }
@@ -49,7 +64,7 @@ public class LecturerServiceImpl implements LecturerService {
     @Override
     public Page<LecturerDto> findAllByPage(int page) {
         Type listType = new TypeToken<Page<LecturerDto>>() {}.getType();
-        return modelMapper.map(lecturers.findAll(new PageRequest(page, 10)), listType);
+        return modelMapper.map(lecturers.findAll(new PageRequest(page, 10, Sort.Direction.ASC, "lastName")), listType);
     }
 
     @Override
@@ -85,8 +100,39 @@ public class LecturerServiceImpl implements LecturerService {
     }
 
     @Override
+    public List<LecturerDto> importEntities(File file) throws IOException {
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+                return null;
+            case "lecturer":
+            case "admin":
+                CSVParser parser = CSVParser.parse(file, StandardCharsets.UTF_8, CSVFormat.EXCEL.withIgnoreSurroundingSpaces().withHeader());
+                String email;
+                for (CSVRecord csvRecord : parser) {
+                    email = csvRecord.get("EMAIL").trim();
+                    if (this.findByEmail(email) == null){
+                        LecturerDto newLecturer = new LecturerDto();
+                        Map<String, String> nameMap = parsingService.parseFirstLastName(csvRecord.get("NAME").trim());
+                        newLecturer.setFirstName(nameMap.get("firstName"));
+                        newLecturer.setLastName(nameMap.get("lastName"));
+                        newLecturer.setEmail(email);
+                        newLecturer.setPassword("qwe123");
+                        this.add(newLecturer);
+                    }
+                }
+                return null;
+        }
+        return null;
+    }
+
+    @Override
     public LecturerDto findByEmail(String email) {
-        return modelMapper.map(lecturers.findByEmail(email), LecturerDto.class);
+        Lecturer lecturer = lecturers.findByEmail(email);
+        if (lecturer != null){
+            return modelMapper.map(lecturer, LecturerDto.class);
+        }
+        else return null;
     }
 
     @Override

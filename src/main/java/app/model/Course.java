@@ -37,20 +37,26 @@ public class Course implements Item, Serializable {
     @Column(name = "semester", nullable = false, length = 1)
     private int semester;
 
-    @ManyToMany(mappedBy = "courses", fetch = FetchType.EAGER, targetEntity = Lecturer.class, cascade = CascadeType.ALL)
+    @Column(name = "website", length = 150)
+    private String website;
+
+    @Column(name = "nameid", length = 30, unique = true)
+    private String nameid;
+
+    @OneToMany(mappedBy = "course", fetch = FetchType.EAGER, targetEntity = Activity.class, orphanRemoval = true, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}) //cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}
+    @Fetch(value = FetchMode.SUBSELECT)
+//    @JsonSerialize(using = CustomActivityListSerializer.class)
+    private List<Activity> activities;
+
+    @ManyToMany(mappedBy = "courses", fetch = FetchType.EAGER, targetEntity = Lecturer.class, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @Fetch(value = FetchMode.SUBSELECT)
     @JsonSerialize(using = CustomLecturerListSerializer.class)
     private List<Lecturer> lecturers;
 
-    @ManyToMany(mappedBy = "courses", fetch = FetchType.EAGER, targetEntity = Student.class, cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "courses", fetch = FetchType.EAGER, targetEntity = Student.class, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @Fetch(value = FetchMode.SUBSELECT)
     @JsonSerialize(using = CustomStudentListSerializer.class)
     private List<Student> students;
-
-    @OneToMany(mappedBy = "course", fetch = FetchType.EAGER, targetEntity = Activity.class, orphanRemoval = true) //cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE}
-    @Fetch(value = FetchMode.SUBSELECT)
-//    @JsonSerialize(using = CustomActivityListSerializer.class)
-    private List<Activity> activities;
 
     public Course(String name, int yearOfStudy) {
         this.setTitle(name);
@@ -123,5 +129,21 @@ public class Course implements Item, Serializable {
             }
         }
         return false;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public String getNameid() {
+        return nameid;
+    }
+
+    public void setNameid(String nameid) {
+        this.nameid = nameid;
     }
 }

@@ -25,6 +25,8 @@ public class StorageServiceImpl implements StorageService {
 
     private final Path rootLocation;
 
+    private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
+
     @Autowired
     public StorageServiceImpl(StorageConfig properties) {
         this.rootLocation = Paths.get(properties.getLocation());
@@ -97,6 +99,11 @@ public class StorageServiceImpl implements StorageService {
     @Override
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
+    }
+
+    @Override
+    public String getTempDir() {
+        return TMP_DIR;
     }
 
     @Override

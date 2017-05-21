@@ -1,5 +1,6 @@
 package app.service.activity;
 
+import app.model.Course;
 import app.model.activity.Activity;
 import app.model.activity.ActivityAttendance;
 import app.model.activity.ActivityGrade;
@@ -8,6 +9,7 @@ import app.model.dto.StudentGradeDto;
 import app.model.user.Lecturer;
 import app.model.user.Student;
 import app.model.user.User;
+import app.repository.CourseRepository;
 import app.repository.LecturerRepository;
 import app.repository.StudentRepository;
 import app.repository.activity.ActivityAttendanceRepository;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +46,8 @@ public class ActivityGradeServiceImpl implements ActivityGradeService {
     private LecturerRepository lecturers;
     @Autowired
     private StudentRepository studentRepository;
+    @Autowired
+    private CourseRepository courseRepository;
 
     public ActivityGradeServiceImpl() {
 
@@ -109,6 +114,11 @@ public class ActivityGradeServiceImpl implements ActivityGradeService {
     }
 
     @Override
+    public List<ActivityGrade> importEntities(File file) {
+        return null;
+    }
+
+    @Override
     public Page<ActivityGrade> findByActivityIdByPage(long id, int page) {
         Activity activity = activityRepository.findOne(id);
         if (activity == null) {
@@ -142,6 +152,23 @@ public class ActivityGradeServiceImpl implements ActivityGradeService {
             saved.add(activityGrades.save(currentGrade));
         }
         return saved;
+    }
+
+    @Override
+    public List<ActivityGrade> findByActivityCourseId(long id){
+        Course course = courseRepository.findOne(id);
+        if (course == null) {
+            return null;
+        }
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()) {
+            case "student":
+                return null;
+            case "lecturer":
+            case "admin":
+                return activityGrades.findByActivityCourseId(id);
+        }
+        return null;
     }
 
 }

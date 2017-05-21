@@ -2,16 +2,16 @@
 drop table students, lecturers, admins, groups, courses, groups_students, course_attendants, course_ownerships, activities, activity_types, activity_attendances, activity_grades, activity_files  CASCADE;
 
 /*New*/
-create table students (id  bigserial not null, email varchar(30) not null, first_name varchar(30) not null, last_name varchar(30) not null, password varchar(60) not null, primary key (id));
+create table students (id  bigserial not null, email varchar(100) not null, first_name varchar(30) not null, last_name varchar(30) not null, password varchar(60) not null, matricol varchar(50), primary key (id), unique(matricol));
 alter table students add constraint UK_6dotkott2kjsp8vw410m25fb7 unique (email);
-create table lecturers (id  bigserial not null, email varchar(30) not null, first_name varchar(30) not null, last_name varchar(30) not null, password varchar(60) not null, primary key (id));
+create table lecturers (id  bigserial not null, email varchar(100) not null, first_name varchar(30) not null, last_name varchar(30) not null, password varchar(60) not null, website varchar(150), primary key (id));
 alter table lecturers add constraint UK_6dotkoaa2kjsp8vw410m25fb7 unique (email);
-create table admins (id  bigserial not null, email varchar(30) not null, first_name varchar(30) not null, last_name varchar(30) not null, password varchar(60) not null, primary key (id));
+create table admins (id  bigserial not null, email varchar(100) not null, first_name varchar(30) not null, last_name varchar(30) not null, password varchar(60) not null, primary key (id));
 alter table admins add constraint UK_6dotkoaa2kjao8vw410m25fb7 unique (email);
 
 create table groups (id  bigserial not null, name varchar(255) not null, year int4 not null, primary key (id));
-alter table groups add constraint UK_8mf0is8024pqmwjxgldfe54l7 unique (name);
-create table courses (id  bigserial not null, title varchar(255) not null, year int4 not null, semester int4 not null, primary key (id));
+alter table groups add constraint UK_8mf0is8024pqmwjxgldfe54l7 unique (name, year);
+create table courses (id  bigserial not null, title varchar(255) not null, year int4 not null, semester int4 not null, nameid varchar(30), website varchar(150), primary key (id), unique(nameid));
 alter table courses add constraint UK_8mf0is8024pqmwjxglfas54l7 unique (title);
 
 create table activity_types (id  bigserial not null, name varchar(255) not null, primary key (id));
@@ -29,15 +29,15 @@ create table activities (
 
 /*Linking Tables*/
 CREATE TABLE groups_students (
-  student_id    int REFERENCES students (id) ON UPDATE CASCADE ON DELETE CASCADE, group_id int REFERENCES groups (id) ON UPDATE CASCADE,
+  student_id    int REFERENCES students (id) ON UPDATE CASCADE ON DELETE CASCADE, group_id int REFERENCES groups (id) ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT group_students_pkey PRIMARY KEY (student_id, group_id)
 );
 CREATE TABLE course_ownerships (
-  lecturer_id    int REFERENCES lecturers (id) ON UPDATE CASCADE ON DELETE CASCADE, course_id int REFERENCES courses (id) ON UPDATE CASCADE, type varchar(30),
+  lecturer_id    int REFERENCES lecturers (id) ON UPDATE CASCADE ON DELETE CASCADE, course_id int REFERENCES courses (id) ON UPDATE CASCADE ON DELETE CASCADE, type varchar(30),
   CONSTRAINT course_ownerships_pkey PRIMARY KEY (lecturer_id, course_id)
 );
 CREATE TABLE course_attendants (
-  student_id    int REFERENCES students (id) ON UPDATE CASCADE ON DELETE CASCADE, course_id int REFERENCES courses (id) ON UPDATE CASCADE,
+  student_id    int REFERENCES students (id) ON UPDATE CASCADE ON DELETE CASCADE, course_id int REFERENCES courses (id) ON UPDATE CASCADE ON DELETE CASCADE,
   CONSTRAINT course_attendants_pkey PRIMARY KEY (student_id, course_id)
 );
 

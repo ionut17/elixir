@@ -13,6 +13,11 @@ import app.repository.CourseRepository;
 import app.repository.LecturerRepository;
 import app.repository.StudentRepository;
 import app.repository.activity.ActivityRepository;
+import app.service.user.LecturerService;
+import app.service.user.StudentService;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +27,12 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 @Component("courseService")
 public class CourseServiceImpl implements CourseService {
@@ -37,9 +46,21 @@ public class CourseServiceImpl implements CourseService {
     @Autowired
     LecturerRepository lecturers;
     @Autowired
+    LecturerService lecturerService;
+    @Autowired
+    StudentService studentService;
+    @Autowired
     ActivityRepository activities;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private ParsingService parsingService;
+
+    private final Sort courseSort = new Sort(
+            new Sort.Order(Sort.Direction.ASC, "year"),
+            new Sort.Order(Sort.Direction.ASC, "semester"),
+            new Sort.Order(Sort.Direction.ASC, "title")
+    );
 
     public CourseServiceImpl() {
 
@@ -71,14 +92,14 @@ public class CourseServiceImpl implements CourseService {
         switch (authenticatedUser.getType()){
             case "student":
                 Student student = students.findOne(authenticatedUser.getId());
-                return modelMapper.map(courses.findByStudents(student, new PageRequest(page, 10)), listType);
+                return modelMapper.map(courses.findByStudents(student, new PageRequest(page, 10, courseSort)), listType);
             case "lecturer":
                 Lecturer lecturer = lecturers.findOne(authenticatedUser.getId());
-                return modelMapper.map(courses.findByLecturers(lecturer, new PageRequest(page, 10)), listType);
+                return modelMapper.map(courses.findByLecturers(lecturer, new PageRequest(page, 10, courseSort)), listType);
             case "admin":
-                return modelMapper.map(courses.findAll(new PageRequest(page, 10)), listType);
+                return modelMapper.map(courses.findAll(new PageRequest(page, 10, courseSort)), listType);
         }
-        return modelMapper.map(courses.findAll(new PageRequest(page, 10)), listType);
+        return null;
     }
 
     @Override
@@ -173,7 +194,12 @@ public class CourseServiceImpl implements CourseService {
                 return null;
             case "lecturer":
             case "admin":
-              return modelMapper.map(courses.findByTitle(title), CourseDto.class);
+                Course result = courses.findByTitle(title);
+                if (result == null){
+                    return null;
+                } else{
+                    return modelMapper.map(result, CourseDto.class);
+                }
         }
         return modelMapper.map(courses.findByTitle(title), CourseDto.class);
     }
@@ -200,6 +226,69 @@ public class CourseServiceImpl implements CourseService {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public List<CourseDto> importEntities(File file) throws IOException {
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "student":
+            case "lecturer":
+                return null;
+            case "admin":
+                CSVParser parser = CSVParser.parse(file, StandardCharsets.UTF_8, CSVFormat.EXCEL.withIgnoreSurroundingSpaces().withHeader());
+                String title;
+                for (CSVRecord csvRecord : parser) {
+                    title = csvRecord.get("TITLE").trim();
+                    if (this.findByTitle(title) == null){
+                        CourseDto newCourse = new CourseDto();
+                        newCourse.setTitle(title);
+                        newCourse.setYear(Integer.valueOf(csvRecord.get("YEAR")));
+                        newCourse.setSemester(Integer.valueOf(csvRecord.get("SEMESTER")));
+                        this.add(newCourse);
+                    }
+                }
+                return null;
+        }
+        return null;
+    }
+
+    @Override
+    public void importCourseOwnerships(File file) throws IOException {
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "lecturer":
+            case "admin":
+                CSVParser parser = CSVParser.parse(file, StandardCharsets.UTF_8, CSVFormat.EXCEL.withIgnoreSurroundingSpaces().withHeader());
+                CourseDto course;
+                LecturerDto lecturer;
+                for (CSVRecord csvRecord : parser) {
+                    course = this.findByTitle(csvRecord.get("COURSE_TITLE").trim());
+                    lecturer = lecturerService.findByEmail(csvRecord.get("LECTURER_EMAIL").trim());
+                    if (course != null && lecturer != null){
+                        lecturerService.addCourseToLecturer(course.getId(), lecturer.getId());
+                    }
+                }
+        }
+    }
+
+    @Override
+    public void importCourseAttendants(File file) throws IOException {
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()){
+            case "lecturer":
+            case "admin":
+                CSVParser parser = CSVParser.parse(file, StandardCharsets.UTF_8, CSVFormat.EXCEL.withIgnoreSurroundingSpaces().withHeader());
+                CourseDto course;
+                StudentDto student;
+                for (CSVRecord csvRecord : parser) {
+                    course = this.findByTitle(csvRecord.get("COURSE_TITLE").trim());
+                    student = studentService.findByEmail(csvRecord.get("STUDENT_EMAIL").trim());
+                    if (course != null && student != null){
+                        studentService.addCourseToStudent(course.getId(), student.getId());
+                    }
+                }
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 package app.service.user;
 
+import app.model.dto.AdminDto;
 import app.model.user.Admin;
 import app.repository.AdminRepository;
 import org.modelmapper.ModelMapper;
@@ -8,9 +9,11 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -33,31 +36,32 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public List<Admin> findAll() {
-        return admins.findAll();
+    public List<AdminDto> findAll() {
+        Type listType = new TypeToken<List<AdminDto>>() {}.getType();
+        return modelMapper.map(admins.findAll(), listType);
     }
 
     @Override
-    public Page<Admin> findAllByPage(int page) {
-        Type listType = new TypeToken<Page<Admin>>() {}.getType();
-        return modelMapper.map(admins.findAll(new PageRequest(page, 10)), listType);
+    public Page<AdminDto> findAllByPage(int page) {
+        Type listType = new TypeToken<Page<AdminDto>>() {}.getType();
+        return modelMapper.map(admins.findAll(new PageRequest(page, 10, Sort.Direction.ASC, "lastName")), listType);
     }
 
     @Override
-    public Admin findById(Long id) {
-        return admins.findOne(id);
+    public AdminDto findById(Long id) {
+        return modelMapper.map(admins.findOne(id), AdminDto.class);
     }
 
     @Override
-    public Admin add(Admin admin) {
+    public AdminDto add(AdminDto admin) {
         String encodedPassword = passwordEncoder.encode(admin.getPassword());
 //        logger.info(encodedPassword);
         Admin newAdmin = new Admin(encodedPassword, admin.getFirstName(), admin.getLastName(), admin.getEmail());
-        return admins.save(newAdmin);
+        return modelMapper.map(admins.save(newAdmin), AdminDto.class);
     }
 
     @Override
-    public Admin update(Admin admin) {
+    public AdminDto update(AdminDto admin) {
         return null;
     }
 
@@ -67,7 +71,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public boolean entityExist(Admin admin) {
+    public boolean entityExist(AdminDto admin) {
         Admin found = admins.findByEmail(admin.getEmail());
         if (found == null) {
             return false;
@@ -76,13 +80,19 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public Admin findByEmail(String email) {
-        return admins.findByEmail(email);
+    public List<AdminDto> importEntities(File file) {
+        return null;
     }
 
     @Override
-    public Page<Admin> searchByPage(String query, int page) {
-        return admins.findDistinctByFirstNameOrLastNameOrEmailAllIgnoreCaseContaining(query, query, query, new PageRequest(page, 10));
+    public AdminDto findByEmail(String email) {
+        return modelMapper.map(admins.findByEmail(email), AdminDto.class);
+    }
+
+    @Override
+    public Page<AdminDto> searchByPage(String query, int page) {
+        Type listType = new TypeToken<Page<AdminDto>>() {}.getType();
+        return modelMapper.map(admins.findDistinctByFirstNameOrLastNameOrEmailAllIgnoreCaseContaining(query, query, query, new PageRequest(page, 10)), listType);
     }
 
 }

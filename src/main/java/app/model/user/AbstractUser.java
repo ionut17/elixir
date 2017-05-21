@@ -26,7 +26,7 @@ public abstract class AbstractUser implements IUser {
     @Column(name = "last_name", nullable = false, length = 30)
     private String lastName;
 
-    @Column(name = "email", nullable = false, length = 30, unique = true)
+    @Column(name = "email", nullable = false, length = 100, unique = true)
     private String email;
 
     //Constructors

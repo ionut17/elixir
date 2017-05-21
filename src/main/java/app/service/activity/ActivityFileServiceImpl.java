@@ -1,8 +1,10 @@
 package app.service.activity;
 
+import app.model.Course;
 import app.model.activity.*;
 import app.model.user.Lecturer;
 import app.model.user.User;
+import app.repository.CourseRepository;
 import app.repository.LecturerRepository;
 import app.repository.activity.ActivityFileRepository;
 import app.repository.activity.ActivityGradeRepository;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +35,8 @@ public class ActivityFileServiceImpl implements ActivityFileService {
     ActivityRepository activityRepository;
     @Autowired
     private LecturerRepository lecturers;
+    @Autowired
+    private CourseRepository courseRepository;
 
     public ActivityFileServiceImpl() {
 
@@ -98,6 +103,11 @@ public class ActivityFileServiceImpl implements ActivityFileService {
     }
 
     @Override
+    public List<ActivityFile> importEntities(File file) {
+        return null;
+    }
+
+    @Override
     public Page<ActivityFile> findByActivityIdByPage(long id, int page) {
         Activity activity = activityRepository.findOne(id);
         if (activity == null) {
@@ -131,6 +141,23 @@ public class ActivityFileServiceImpl implements ActivityFileService {
             case "lecturer":
             case "admin":
                 return activityFiles.findByActivityIdAndStudentId(activityId, studentId, new PageRequest(page, 10));
+        }
+        return null;
+    }
+
+    @Override
+    public List<ActivityFile> findByActivityCourseId(long courseId) {
+        Course course = courseRepository.findOne(courseId);
+        if (course == null) {
+            return null;
+        }
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()) {
+            case "student":
+                return null;
+            case "lecturer":
+            case "admin":
+                return activityFiles.findByActivityCourseId(courseId);
         }
         return null;
     }

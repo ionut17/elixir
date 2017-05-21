@@ -1,5 +1,6 @@
 package app.repository.activity;
 
+import app.model.Course;
 import app.model.activity.ActivityAttendance;
 import app.model.activity.ActivityAttendanceId;
 import app.model.activity.ActivityGrade;
@@ -21,6 +22,8 @@ public interface ActivityAttendanceRepository extends BaseRepository<ActivityAtt
     Page<ActivityAttendance> findByActivityIdAndStudentId(Long activityId, Long studentId, Pageable pageable);
 
     Page<ActivityAttendance> findByActivityCourseLecturers (Lecturer lecturer, Pageable pageable);
+
+    List<ActivityAttendance> findByActivityCourseId(Long id);
 
     Page<ActivityAttendance> findDistinctByActivityNameOrActivityCourseTitleOrStudentFirstNameOrStudentLastNameAllIgnoreCaseContaining(String activityName, String courseTitle, String studentFirstName, String studentLastName, Pageable pageable);
 

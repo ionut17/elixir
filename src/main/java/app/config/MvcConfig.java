@@ -45,7 +45,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE");
 //        registry.addMapping("/**").allowedOrigins("http://localhost:1000");
-//        registry.addMapping("/**").allowedOrigins("http://elixir.ionutrobert.com");
+//        registry.addMapping("/**").allowedOrigins("http://elixir.ionutrobert.com").allowedMethods("GET", "POST", "PUT", "DELETE");
     }
 
 //    @Override

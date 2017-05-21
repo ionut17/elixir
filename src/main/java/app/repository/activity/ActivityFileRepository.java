@@ -27,4 +27,5 @@ public interface ActivityFileRepository extends BaseRepository<ActivityFile, Lon
 
     Page<ActivityFile> findDistinctByActivityNameOrActivityCourseTitleOrStudentFirstNameOrStudentLastNameOrFileNameAllIgnoreCaseContaining(String activityName, String courseTitle, String studentFirstName, String studentLastName, String fileName, Pageable pageable);
 
+    List<ActivityFile> findByActivityCourseId(long courseId);
 }

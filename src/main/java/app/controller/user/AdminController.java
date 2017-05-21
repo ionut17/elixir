@@ -2,6 +2,7 @@ package app.controller.user;
 
 import app.controller.common.BaseController;
 import app.model.Pager;
+import app.model.dto.AdminDto;
 import app.model.user.Admin;
 import app.service.user.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class AdminController extends BaseController {
     public ResponseEntity listAllAdmins(@RequestParam(value = "page", required = false) Integer page, @RequestParam(value = "search", required = false) String query) {
         int targetPage = page != null ? page.intValue() : 0;
         Map<String, Object> toReturn = new HashMap<>();
-        Page<Admin> admins;
+        Page<AdminDto> admins;
         if (query!=null){
             admins = adminService.searchByPage(query, targetPage);
         } else{
@@ -50,8 +51,8 @@ public class AdminController extends BaseController {
     //-------------------Retrieve Single Admin--------------------------------------------------------
 
     @RequestMapping(value = "/admins/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Admin> getAdminById(@PathVariable("id") long id) {
-        Admin admin = adminService.findById(id);
+    public ResponseEntity getAdminById(@PathVariable("id") long id) {
+        AdminDto admin = adminService.findById(id);
         if (admin == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -59,8 +60,8 @@ public class AdminController extends BaseController {
     }
 
     @RequestMapping(value = "/admins/email/{email:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Admin> getAdminByEmail(@PathVariable("email") String email) {
-        Admin admin = adminService.findByEmail(email);
+    public ResponseEntity getAdminByEmail(@PathVariable("email") String email) {
+        AdminDto admin = adminService.findByEmail(email);
         if (admin == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -70,7 +71,7 @@ public class AdminController extends BaseController {
     //-------------------Create a Admin--------------------------------------------------------
 
     @RequestMapping(value = "/admins", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Void> createAdmin(@RequestBody Admin admin, UriComponentsBuilder ucBuilder) {
+    public ResponseEntity<Void> createAdmin(@RequestBody AdminDto admin, UriComponentsBuilder ucBuilder) {
         if (adminService.entityExist(admin)) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -85,8 +86,8 @@ public class AdminController extends BaseController {
     //-------------------Update a Admin--------------------------------------------------------
 
     @RequestMapping(value = "/admins/{id}", method = RequestMethod.PATCH)
-    public ResponseEntity<Admin> updateAdmin(@PathVariable("id") long id, @RequestBody Admin admin) {
-        Admin currentAdmin = adminService.findById(id);
+    public ResponseEntity updateAdmin(@PathVariable("id") long id, @RequestBody Admin admin) {
+        AdminDto currentAdmin = adminService.findById(id);
 
         if (currentAdmin == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -103,8 +104,8 @@ public class AdminController extends BaseController {
     //-------------------Delete a Admin--------------------------------------------------------
 
     @RequestMapping(value = "/admins/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Admin> deleteAdmin(@PathVariable("id") long id) {
-        Admin admin = adminService.findById(id);
+    public ResponseEntity deleteAdmin(@PathVariable("id") long id) {
+        AdminDto admin = adminService.findById(id);
         if (admin == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

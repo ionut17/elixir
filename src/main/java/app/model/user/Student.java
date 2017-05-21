@@ -27,7 +27,10 @@ public class Student extends AbstractUser {
 
     //Fields
 
-    @ManyToMany(fetch = FetchType.EAGER, targetEntity = Group.class, cascade = CascadeType.ALL)
+    @Column(name = "matricol", length = 50, unique = true)
+    private String matricol;
+
+    @ManyToMany(fetch = FetchType.EAGER, targetEntity = Group.class, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinTable(name = "GROUPS_STUDENTS",
             joinColumns = {@JoinColumn(name = "student_id")},
@@ -35,7 +38,7 @@ public class Student extends AbstractUser {
     @JsonSerialize(using = CustomGroupListSerializer.class)
     private List<Group> groups = new ArrayList<Group>();
 
-    @ManyToMany(fetch = FetchType.EAGER, targetEntity = Course.class, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, targetEntity = Course.class, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
     @Fetch(value = FetchMode.SUBSELECT)
     @JoinTable(name = "COURSE_ATTENDANTS",
             joinColumns = {@JoinColumn(name = "student_id")},
@@ -43,17 +46,17 @@ public class Student extends AbstractUser {
     @JsonSerialize(using = CustomCourseListSerializer.class)
     private List<Course> courses = new ArrayList<Course>();
 
-    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityAttendance.class, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityAttendance.class, orphanRemoval = true, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE})
     @Fetch(value = FetchMode.SUBSELECT)
 //    @JsonSerialize(using = CustomActivityAttendanceListSerializer.class)
     private List<ActivityAttendance> attendances = new ArrayList<ActivityAttendance>();
 
-    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityGrade.class, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityGrade.class, orphanRemoval = true, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE})
     @Fetch(value = FetchMode.SUBSELECT)
 //    @JsonSerialize(using = CustomActivityGradeListSerializer.class)
     private List<ActivityGrade> grades = new ArrayList<ActivityGrade>();
 
-    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityFile.class, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE})
+    @OneToMany(mappedBy = "student", fetch = FetchType.EAGER, targetEntity = ActivityFile.class, orphanRemoval = true, cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.REMOVE})
     @Fetch(value = FetchMode.SUBSELECT)
 //    @JsonSerialize(using = CustomActivityFileListSerializer.class)
     private List<ActivityFile> files = new ArrayList<>();
@@ -107,5 +110,13 @@ public class Student extends AbstractUser {
 
     public void setFiles(List<ActivityFile> files) {
         this.files = files;
+    }
+
+    public String getMatricol() {
+        return matricol;
+    }
+
+    public void setMatricol(String matricol) {
+        this.matricol = matricol;
     }
 }

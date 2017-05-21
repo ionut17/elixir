@@ -1,11 +1,13 @@
 package app.service.activity;
 
+import app.model.Course;
 import app.model.activity.Activity;
 import app.model.activity.ActivityAttendance;
 import app.model.activity.ActivityAttendanceId;
 import app.model.user.Lecturer;
 import app.model.user.Student;
 import app.model.user.User;
+import app.repository.CourseRepository;
 import app.repository.LecturerRepository;
 import app.repository.StudentRepository;
 import app.repository.activity.ActivityAttendanceRepository;
@@ -22,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +45,8 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
     private LecturerRepository lecturers;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private CourseRepository courseRepository;
 
     public ActivityAttendanceServiceImpl() {
 
@@ -80,6 +85,11 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
     @Override
     public Page<ActivityAttendance> searchByPage(String query, int page) {
         return activityAttendances.findDistinctByActivityNameOrActivityCourseTitleOrStudentFirstNameOrStudentLastNameAllIgnoreCaseContaining(query, query, query, query, new PageRequest(page, 10));
+    }
+
+    @Override
+    public List<ActivityAttendance> importEntities(File file) {
+        return null;
     }
 
     @Override
@@ -147,6 +157,23 @@ public class ActivityAttendanceServiceImpl implements ActivityAttendanceService 
             case "lecturer":
             case "admin":
                 return activityAttendances.findByIdActivityId(id, new PageRequest(page, 10));
+        }
+        return null;
+    }
+
+    @Override
+    public List<ActivityAttendance> findByActivityCourseId(long id){
+        Course course = courseRepository.findOne(id);
+        if (course == null) {
+            return null;
+        }
+        User authenticatedUser = authDetailsService.getAuthenticatedUser();
+        switch (authenticatedUser.getType()) {
+            case "student":
+                return null;
+            case "lecturer":
+            case "admin":
+                return activityAttendances.findByActivityCourseId(id);
         }
         return null;
     }
