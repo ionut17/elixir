@@ -1,9 +1,11 @@
 package app.controller;
 
+import app.config.DbSnapshotHolder;
 import app.controller.common.BaseController;
 import app.exceptions.ErrorMessagesWrapper;
 import app.exceptions.JwtAuthenticationException;
 import app.exceptions.StorageFileNotFoundException;
+import app.model.DbSnapshot;
 import app.model.activity.Activity;
 import app.model.activity.ActivityFile;
 import app.model.dto.ResourceDto;
@@ -73,6 +75,8 @@ public class StorageController extends BaseController {
 
     @RequestMapping(value = "/storage/retrieve/{file_id}", params = {"k"}, method = RequestMethod.GET)
     public @ResponseBody ResponseEntity retrieveFile(@PathVariable("file_id") long fileId, @RequestParam("k") String key, UriComponentsBuilder ucBuilder, HttpServletRequest request, HttpServletResponse response) throws IOException{
+        String snapshotKey = request.getHeader("Snapshot");
+        DbSnapshot snapshot = snapshotKey != null ? new DbSnapshot(snapshotKey) : DbSnapshotHolder.getDefaultSnapshot();
         User user;
         try{
             user = jwtService.verifyToken(key);
@@ -90,7 +94,7 @@ public class StorageController extends BaseController {
             return new ResponseEntity<>(new ErrorMessagesWrapper(emp.NOT_AUTHORIZED), HttpStatus.BAD_REQUEST);
         }
 
-        ResourceDto resourceDto = new ResourceDto(activityFile);
+        ResourceDto resourceDto = new ResourceDto(activityFile, snapshot);
 
         if (!resourceDto.isValid()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -119,7 +123,9 @@ public class StorageController extends BaseController {
     }
 
     @RequestMapping(value = "/storage/upload", headers=("content-type=multipart/*"), method = RequestMethod.POST)
-    public ResponseEntity<Resource> uploadFile(@RequestParam(value = "file") MultipartFile uploadedFile, @RequestParam(value="activityId") Long activityId, @RequestParam(value="fileName") String fileName, UriComponentsBuilder ucBuilder) {
+    public ResponseEntity<Resource> uploadFile(@RequestParam(value = "file") MultipartFile uploadedFile, @RequestParam(value="activityId") Long activityId, @RequestParam(value="fileName") String fileName, UriComponentsBuilder ucBuilder, HttpServletRequest request) {
+        String snapshotKey = request.getHeader("Snapshot");
+        DbSnapshot snapshot = snapshotKey != null ? new DbSnapshot(snapshotKey) : DbSnapshotHolder.getDefaultSnapshot();
         if (uploadedFile.isEmpty()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -140,7 +146,7 @@ public class StorageController extends BaseController {
         activityFile.setExtension(FilenameUtils.getExtension(uploadedFile.getOriginalFilename()));
         activityFile.setUploadDate(new Date());
         activityFile.setUploadDate(timeConverter.addMinutes(new Date(), 180)); //convert to GMT+3 time
-        ResourceDto uploadedResource = new ResourceDto(activityFile);
+        ResourceDto uploadedResource = new ResourceDto(activityFile, snapshot);
         if (!uploadedResource.isValid()){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

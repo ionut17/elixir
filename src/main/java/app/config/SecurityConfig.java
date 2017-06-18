@@ -2,6 +2,7 @@ package app.config;
 
 import app.auth.JwtAuthFilter;
 import app.auth.JwtAuthenticationProvider;
+import app.auth.SnapshotFilter;
 import app.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +15,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.servlet.Filter;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -28,6 +31,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private JwtAuthFilter jwtAuthFilter;
+    @Autowired
+    private SnapshotFilter snapshotFilter;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -43,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 //        http.authorizeRequests().anyRequest().permitAll();
         http.authorizeRequests()
-                .antMatchers("/api/login","/api/storage/retrieve/**/*")
+                .antMatchers("/api/login","/api/storage/retrieve/**/*","/api/snapshots")
                 .permitAll()
                 .antMatchers(HttpMethod.OPTIONS)
                 .permitAll()

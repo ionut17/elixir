@@ -1,5 +1,6 @@
 package app.controller;
 
+import app.config.DbSnapshotHolder;
 import app.controller.common.BaseController;
 import app.exceptions.ErrorMessagesProvider;
 import app.exceptions.ErrorMessagesWrapper;
@@ -48,6 +49,11 @@ public class LoginController extends BaseController {
         responseToken.setUser(modelMapper.map(loggedUser, UserDto.class));
         responseToken.setToken(jwtService.tokenFor(loggedUser));
         return new ResponseEntity<>(responseToken, HttpStatus.OK); //HttpStatus.NOT_FOUND
+    }
+
+    @RequestMapping(value = "/snapshots", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity listAllSnapshots() {
+        return new ResponseEntity(DbSnapshotHolder.SNAPSHOTS, HttpStatus.OK);
     }
 
 }

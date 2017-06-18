@@ -1,6 +1,7 @@
 package app.model.dto;
 
 import app.model.Course;
+import app.model.DbSnapshot;
 import app.model.Group;
 import app.model.activity.ActivityAttendance;
 import app.model.activity.ActivityFile;
@@ -11,6 +12,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.List;
 
 public class ResourceDto implements Item {
+
+    private String snapshot;
 
     private Long courseId;
 
@@ -29,13 +32,14 @@ public class ResourceDto implements Item {
     public ResourceDto() {
     }
 
-    public ResourceDto(ActivityFile activityFile){
+    public ResourceDto(ActivityFile activityFile, DbSnapshot snapshot){
         this.setCourseId(activityFile.getActivity().getCourse().getId());
         this.setTypeId(activityFile.getActivity().getType().getId());
         this.setName(activityFile.getActivity().getName());
         this.setStudentId(activityFile.getStudent().getId());
         this.setFileName(activityFile.getFileName());
         this.setExtension(activityFile.getExtension());
+        this.setSnapshot(snapshot.getKey());
     }
 
     public ResourceDto(Long courseId, Long typeId, String name, Long studentId, String fileName) {
@@ -62,7 +66,7 @@ public class ResourceDto implements Item {
         if (this.getExtension()!=null){
             endOfString = '.'+this.getExtension();
         }
-        String[] pathDetails = {String.valueOf(this.getCourseId()), String.valueOf(this.getTypeId()), this.getName(), String.valueOf(this.getStudentId()), this.getFileName()+endOfString};
+        String[] pathDetails = {this.getSnapshot(), String.valueOf(this.getCourseId()), String.valueOf(this.getTypeId()), this.getName(), String.valueOf(this.getStudentId()), this.getFileName()+endOfString};
         return String.join("/", pathDetails);
     }
 
@@ -118,4 +122,11 @@ public class ResourceDto implements Item {
         this.extension = extension;
     }
 
+    public String getSnapshot() {
+        return snapshot;
+    }
+
+    public void setSnapshot(String snapshot) {
+        this.snapshot = snapshot;
+    }
 }
